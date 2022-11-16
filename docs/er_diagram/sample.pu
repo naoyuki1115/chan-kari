@@ -1,0 +1,3 @@
+@startuml
+A ||--o{ B
+@enduml
