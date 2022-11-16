@@ -26,11 +26,13 @@ frontend と backend はそれぞれ以下のディレクトで管理
 環境構築および実行方法等も各ディレクト配下の `READEME.md` を参照
 
 ### For frontend
+[README](frontend/README.md)
 ```sh
 cd frontend
 ```
 
 ### For backend
+[README](backend/README.md)
 ```sh
 cd backend
 ```

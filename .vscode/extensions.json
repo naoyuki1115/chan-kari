@@ -1,0 +1,15 @@
+{
+    "recommendations": [
+        "42crunch.vscode-openapi",
+        "zoellner.openapi-preview",
+        "redhat.vscode-yaml",
+        "streetsidesoftware.code-spell-checker",
+        "dbaeumer.vscode-eslint",
+        "mhutchie.git-graph",
+        "jebbs.plantuml",
+        "esbenp.prettier-vscode",
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "gruntfuggly.todo-tree",
+        "ms-vsliveshare.vsliveshare"
+    ]
+}
