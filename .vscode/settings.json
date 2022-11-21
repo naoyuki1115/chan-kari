@@ -1,5 +1,7 @@
 {
     "prettier.tabWidth": 4,
     "editor.tabSize": 4,
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "plantuml.render": "PlantUMLServer",
+    "plantuml.server": "http://localhost:12345"
 }
