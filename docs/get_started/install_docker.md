@@ -3,7 +3,7 @@ Mac/Windowsなどそれぞれの実行環境に合わせて環境構築するの
 (開発環境用と本番環境用の2つのコンテナイメージを作成する)
 
 ## Mac
-[下記Docker公式サイト](https://docs.docker.jp/docker-for-mac/install.html#mac-system-requirementsよりDocker) の説明に従ってDesktopをインストール  
+[Docker公式サイト](https://docs.docker.jp/docker-for-mac/install.html#mac-system-requirementsよりDocker) の説明に従ってDesktopをインストール  
 
 - 正常にインストールされたことをTerminalで確認
   
@@ -29,8 +29,8 @@ Mac/Windowsなどそれぞれの実行環境に合わせて環境構築するの
 ### WSL2 インストール
 WindowsでDockerを使用するためにはLinux環境が必要なので、[Microsoftのページ](https://learn.microsoft.com/ja-jp/windows/wsl/install)に従い、WSL2を有効化しUbuntuをインストールします。
 
-- Powershellを管理者モードで開く(右クリックで選択)
-![](https://chigusa-web.com/wp-content/uploads/2021/12/2021-12-04_14h02_17.png)
+- Powershellを管理者モードで開く(右クリックで選択)  
+  ![](https://chigusa-web.com/wp-content/uploads/2021/12/2021-12-04_14h02_17.png)
 - Ubuntu 20.04 LTS をインストール (念のためWSLのバージョンを2にする）
   ```powershell
   wsl --set-default-version 2
@@ -66,7 +66,7 @@ WindowsでDockerを使用するためにはLinux環境が必要なので、[Micr
   GitHubのcloneもWSL上で実施してくだささい。
 
 ### Dockerインストール
-[下記Docker公式サイト](https://docs.docker.jp/docker-for-windows/install-windows-home.html#windows-10-home-docker-desktop) の説明に従ってDesktopをインストール  
+[Docker公式サイト](https://docs.docker.jp/docker-for-windows/install-windows-home.html#windows-10-home-docker-desktop) の説明に従ってDesktopをインストール  
 
 - 正常にインストールされたことをWindows TerminalからUbuntuを選んで確認
   
