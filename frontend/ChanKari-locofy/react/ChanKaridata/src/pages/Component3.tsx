@@ -13,17 +13,11 @@ const Component3: FunctionComponent = () => {
     <div className={styles.div}>
       <img className={styles.icon} alt="" src="../-11.svg" />
       <b className={styles.b}>チャンカリ</b>
-      <div className={styles.div1}>
-        <b className={styles.b1}>メールアドレス</b>
-      </div>
-      <div className={styles.div2}>
-        <b className={styles.b1}>パスワード</b>
-      </div>
-      <div className={styles.div3}>
-        <b className={styles.b1}>パスワード（確認）</b>
-      </div>
+      <textarea className={styles.textarea} />
+      <textarea className={styles.textarea1} />
+      <textarea className={styles.textarea2} />
       <button className={styles.button} onClick={onButtonClick}>
-        <b className={styles.b4}>新規登録</b>
+        <b className={styles.b1}>新規登録</b>
       </button>
     </div>
   );
