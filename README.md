@@ -26,6 +26,7 @@ Frontend と Backend の2つのWebアプリケーションで構成
 frontend と backend はそれぞれ以下のディレクトで管理  
 環境構築および実行方法等も各ディレクト配下の `READEME.md` を参照
 - [Dockerインストール](docs/get_started/install_docker.md) (共通)
+- [docs/README.md](docs/README.md)
 - [frontend/README.md](frontend/README.md)
 - [backend/README.md](backend/README.md)
 
