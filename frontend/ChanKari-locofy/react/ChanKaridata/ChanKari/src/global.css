@@ -1,0 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Arial+Rounded+MT:wght@700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lucida+Bright:wght@400&display=swap");
+body {
+  margin: 0;
+  line-height: normal;
+}
+:root {
+  /* fonts */
+  --font-arial-rounded-mt: "Arial Rounded MT";
+  --font-segoe-ui: "Segoe UI";
+  --font-lucida-bright: "Lucida Bright";
+
+  /* font sizes */
+  --font-size-sm: 15px;
+  --font-size-base: 20px;
+  --font-size-lg: 25px;
+  --font-size-xl: 30px;
+  --font-size-2xl: 40px;
+  --font-size-3xl: 45px;
+
+  /* Colors */
+  --color-white: #fff;
+  --color-gray-100: #aaa;
+  --color-gray-200: #707070;
+  --color-gray-300: #0c0c0c;
+  --color-gray-400: rgba(12, 12, 12, 0.47);
+  --color-green-100: #81d95b;
+  --color-green-200: #7ed957;
+  --color-black: #000;
+  --color-red: #ff0000;
+
+  /* border radiuses */
+  --br-sm: 14px;
+  --br-md: 15px;
+  --br-lg: 43px;
+}
