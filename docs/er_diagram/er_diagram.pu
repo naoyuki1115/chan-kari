@@ -1,0 +1,35 @@
+@startuml
+entity "users" {
+  * id: int <<generated>>
+  --
+  * name: varchar(50)
+  * email: varchar(50), unique
+    image_url: varchar(300)
+}
+
+entity "items" {
+  *id: int <<generated>>
+  --
+  * name: varchar(50)
+  * owner_id: <<FK>> [users.id]
+  * available: boolean
+    image_url: varchar(300)
+    description: varchar(300)
+    author: varchar(50)
+}
+
+entity "rentals" {
+  * id: int <<generated>>
+  --
+  * item_id: <<FK>> [items.id]
+  * user_id: <<FK>> [users.id]
+  * rental_date: date
+  * return_date: date
+  --
+  unique[item_id, user_id, rental_date, return_date]
+}
+
+users ||-l-o{ rentals
+items ||-r-o{ rentals
+users ||-l-o{ items
+@enduml
