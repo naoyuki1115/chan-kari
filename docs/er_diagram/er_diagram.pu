@@ -4,6 +4,7 @@ entity "users" {
   --
   * name: varchar(50)
   * email: varchar(50), unique
+    image_url: varchar(300)
 }
 
 entity "items" {
