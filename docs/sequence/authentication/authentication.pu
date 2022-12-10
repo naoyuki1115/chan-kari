@@ -33,14 +33,15 @@ activate fe
     activate be
         be -> be: Verify ID token \nusing FireBase private key
         alt Case of Authentication Success
-        be -> be: Get some data from DB
-        be --> fe: Response Something
-        fe --> user: Show some page
+            be -> be: Upsert user information to DB \nfrom decoded ID token
+            be -> be: Get some data from DB
+            be --> fe: Response Something
+            fe --> user: Show some page
         
         else Case of Authentication Failure
-        be --> fe: Response failure (403)
-        fe --> user: Redirect to login page
-        ref over user, auth: Login process again\n
+            be --> fe: Response failure (403)
+            fe --> user: Redirect to login page
+            ref over user, auth: Login process again\n
         end
     deactivate
 deactivate
