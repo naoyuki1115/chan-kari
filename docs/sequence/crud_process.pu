@@ -1,4 +1,4 @@
-@startuml save image
+@startuml CRUD_item
 
 Actor "User\n(browser)" as user
 participant "frontend" as fe
