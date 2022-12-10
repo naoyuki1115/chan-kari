@@ -1,0 +1,45 @@
+@startuml rental_process
+
+Actor "User\n(browser)" as user
+participant "frontend" as fe
+participant "backend" as be
+database "DB" as db
+
+== Rental an item ==
+
+user -> fe: Access item page
+activate fe
+    user -> fe: Push rental button
+    fe -> be: POST a new rental (/users/rentals)
+    activate be
+        be -> db: Get rental item list
+        activate db
+            db --> be:
+        deactivate
+        be -> be: Check if the item is available
+        be -> db: Create a new rental 
+        activate db
+            db --> be:
+        deactivate
+        be --> fe: OK
+    deactivate
+    fe --> user: OK
+deactivate
+
+== Return an item ==
+
+user -> fe: Access my rental item page
+activate fe
+    user -> fe: Push return button
+    fe -> be: DELETE a rental (/users/rentals/:id)
+    activate be
+        be -> db: update rental record (return_at)
+        activate db
+            db --> be:
+        deactivate
+        be --> fe: OK
+    deactivate
+    fe --> user: OK
+deactivate
+
+@enduml
