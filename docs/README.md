@@ -1,6 +1,20 @@
-# 設計ドキュメント
-ドキュメントの確認方法は[こちら](#ドキュメント確認方法)を参照
+# ドキュメント確認方法
+## PlantUML 起動
+ER図やシーケンス図の確認時に下記を実行
 
+起動 (UML描画前に起動)
+```sh
+docker run -d --rm -p 12345:8080 --name plantuml plantuml/plantuml-server
+```
+`*.pu`ファイルを開き、描画  
+(Mac: `opt + d`, Windows: `alt + d`)
+
+UMLの確認後にdockerコンテナを終了させる
+```sh
+docker stop plantuml
+```
+
+# 設計ドキュメント
 ## システム構成
 FireBaseを使った構成とする
 ![system_structure](system_structure/system_structure.png)
@@ -35,20 +49,3 @@ Item画像はDB上には保存せず、FireBase Storage上に保存し、Upload�
 レンタル履歴を保持するため、返却処理はrentalレコードの`closed` フラグを立てる処理とする。DB上でrentalテーブルの`returned_at`がnullでなければ、`closed=true`として扱う
 ![rental_item](sequence/rental_process/rental_process.png)  
 [rental_process.pu](sequence/rental_process.pu)
-
-# ドキュメント確認方法
-## PlantUML 起動
-ER図やシーケンス図の確認時に下記を実行
-
-起動 (UML描画前に起動)
-```sh
-docker run -d --rm -p 12345:8080 --name plantuml plantuml/plantuml-server
-```
-`*.pu`ファイルを開き、描画
-* Mac: opt + d
-* Windows: alt + d
-
-UMLの確認後にdockerコンテナを終了させる
-```sh
-docker stop plantuml
-```
