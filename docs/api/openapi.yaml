@@ -22,10 +22,5 @@ components:
       description: ID token obtained from FireBase
 
 paths:
-  /test:
-    get:
-      summary: test
-      description: test
-      responses:
-        "200":
-          description: test
+  /users/profile:
+    $ref: "path/users.profile.yaml"
