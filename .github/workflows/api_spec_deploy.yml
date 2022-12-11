@@ -34,22 +34,21 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: install redoc # Redocのインストール
+      - name: install redoc
         run: npm install -g redoc-cli
-      - name: build openAPI file # OpenAPIの定義をHTMLに変換
+      - name: build openAPI file
         run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/index.html
-      - name: Output file contents # 問題があった場合に確認するために中身を出力
+      - name: Output file contents
         run: cat ./docs/api/dist/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
           path: "./docs/api/dist/"
   # Single deploy job since we're just deploying
   deploy:
     needs: build
     environment:
-      name: github-pages
+      name: chan-kari-api-doc
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
