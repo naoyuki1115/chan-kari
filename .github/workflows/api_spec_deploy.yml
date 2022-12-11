@@ -40,6 +40,11 @@ jobs:
         run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/index.html
       - name: Output file contents # 問題があった場合に確認するために中身を出力
         run: cat ./docs/api/dist/index.html
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: "./docs/api/dist/"
   # Single deploy job since we're just deploying
   deploy:
     needs: build
@@ -52,11 +57,6 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v2
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload entire repository
-          path: "./docs/api/dist/"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
