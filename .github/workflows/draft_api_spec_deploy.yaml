@@ -37,19 +37,19 @@ jobs:
       - name: install redoc
         run: npm install -g redoc-cli
       - name: build openAPI file
-        run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/draft.html
+        run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/index.html
       - name: Output file contents
-        run: cat ./docs/api/dist/draft.html
+        run: cat ./docs/api/dist/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "./docs/api/dist/draft.html"
+          path: "./docs/api/dist/"
   # Single deploy job since we're just deploying
   deploy:
     needs: build
     environment:
       name: chan-kari-api-doc
-      url: ${{ steps.deployment.outputs.page_url }}draft.html
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
