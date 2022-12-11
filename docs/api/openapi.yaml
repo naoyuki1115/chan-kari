@@ -28,3 +28,7 @@ paths:
     $ref: "path/items.yaml#/paths/itemList"
   /items/{itemId}:
     $ref: "path/items.yaml#/paths/itemDetail"
+  /users/items:
+    $ref: "path/users.items.yaml#/paths/itemList"
+  /users/items/{itemId}:
+    $ref: "path/users.items.yaml#/paths/itemDetail"
