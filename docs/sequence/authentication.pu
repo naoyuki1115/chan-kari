@@ -1,4 +1,4 @@
-@startuml Authentication
+@startuml authentication
 
 Actor "User\n(browser)" as user
 participant "frontend" as fe
