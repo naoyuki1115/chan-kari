@@ -31,7 +31,7 @@ deactivate
 user -> fe: Access my rental item page
 activate fe
     user -> fe: Push return button
-    fe -> be: DELETE a rental (/users/rentals/:id)
+    fe -> be: PUT a rental (/users/rentals/:id/return)
     activate be
         be -> db: update rental record (return_at)
         activate db
