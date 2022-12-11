@@ -1,0 +1,22 @@
+components:
+  parameters:
+    id:
+      type: integer
+      description: user id
+      example: 1
+    name:
+      type: string
+      description: user name
+      example: "user name"
+    nickName:
+      type: string
+      description: nick name
+      example: "nick name"
+    email:
+      type: string
+      description: email address
+      example: "example@mail.com"
+    imageUrl:
+      type: string
+      description: image URL of FireBase
+      example: "http://example.com/test.png"
