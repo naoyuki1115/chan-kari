@@ -1,0 +1,80 @@
+paths:
+  itemList:
+    get:
+      tags: ["item"]
+      summary: Get item list
+      description: Get item list
+      parameters:
+        - name: status
+          description: Availability status of a item. If it is set, user can filter the list by item status.
+          in: query
+          schema:
+            $ref: "../parameter/item.yaml#/components/parameters/status"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - name
+                    - status
+                    - imageUrl
+                  properties:
+                    id:
+                      $ref: "../parameter/item.yaml#/components/parameters/id"
+                    name:
+                      $ref: "../parameter/item.yaml#/components/parameters/name"
+                    status:
+                      $ref: "../parameter/item.yaml#/components/parameters/status"
+                    imageUrl:
+                      $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+  itemDetail:
+    get:
+      tags: ["item"]
+      summary: Get item detail
+      description: Get item detail
+      parameters:
+        - name: item ID
+          description: item ID
+          in: path
+          required: true
+          schema:
+            $ref: "../parameter/item.yaml#/components/parameters/id"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - status
+                  - imageUrl
+                  - description
+                  - author
+                  - ownerId
+                  - ownerName
+                properties:
+                  id:
+                    $ref: "../parameter/item.yaml#/components/parameters/id"
+                  name:
+                    $ref: "../parameter/item.yaml#/components/parameters/name"
+                  status:
+                    $ref: "../parameter/item.yaml#/components/parameters/status"
+                  imageUrl:
+                    $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+                  description:
+                    $ref: "../parameter/item.yaml#/components/parameters/description"
+                  author:
+                    $ref: "../parameter/item.yaml#/components/parameters/author"
+                  ownerId:
+                    $ref: "../parameter/user.yaml#/components/parameters/id"
+                  ownerNickName:
+                    $ref: "../parameter/user.yaml#/components/parameters/nickName"

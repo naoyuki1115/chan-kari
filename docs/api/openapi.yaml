@@ -24,3 +24,7 @@ components:
 paths:
   /users/profile:
     $ref: "path/users.profile.yaml"
+  /items:
+    $ref: "path/items.yaml#/paths/itemList"
+  /items/{itemId}:
+    $ref: "path/items.yaml#/paths/itemDetail"
