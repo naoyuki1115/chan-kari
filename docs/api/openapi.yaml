@@ -20,7 +20,6 @@ components:
       name: token
       in: header
       description: ID token obtained from FireBase
-
 paths:
   /users/profile:
     $ref: "path/users.profile.yaml"

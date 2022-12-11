@@ -70,7 +70,8 @@ paths:
                 properties:
                   id:
                     $ref: "../parameter/item.yaml#/components/parameters/id"
-
+        "409":
+          description: Duplicate resource names
   itemDetail:
     get:
       security:
@@ -112,6 +113,8 @@ paths:
                     $ref: "../parameter/item.yaml#/components/parameters/description"
                   author:
                     $ref: "../parameter/item.yaml#/components/parameters/author"
+        "403":
+          description: It is not owned item.
     put:
       security:
         - token: []
@@ -151,6 +154,12 @@ paths:
       responses:
         "204":
           description: Success
+        "403":
+          description: It is not owned item.
+        "404":
+          description: Item ID is not found
+        "409":
+          description: Duplicate resource names
     delete:
       security:
         - token: []
@@ -166,9 +175,7 @@ paths:
       responses:
         "204":
           description: Success
-components:
-  parameters:
-    date:
-      type: string
-      description: Date
-      example: "2022-06-06"
+        "403":
+          description: It is not owned item.
+        "404":
+          description: Item ID is not found

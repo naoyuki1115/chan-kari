@@ -79,6 +79,12 @@ paths:
                 properties:
                   id:
                     $ref: "../parameter/rental.yaml#/components/parameters/id"
+        "403":
+          description: Don't be allowed to rent this Item
+        "404":
+          description: Item ID is not found
+        "409":
+          description: Item is already rented by another user
 
   rentalDetail:
     get:
@@ -139,6 +145,10 @@ paths:
                           $ref: "../parameter/item.yaml#/components/parameters/description"
                         author:
                           $ref: "../parameter/item.yaml#/components/parameters/author"
+        "403":
+          description: Rental ID is not your rental
+        "404":
+          description: Rental ID is not found
   rentalReturn:
     put:
       security:
@@ -156,3 +166,7 @@ paths:
       responses:
         "204":
           description: Success
+        "403":
+          description: Rental ID is not your rental
+        "404":
+          description: Rental ID is not found
