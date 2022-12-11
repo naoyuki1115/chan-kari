@@ -4,13 +4,23 @@ info:
   description: WIP
   version: 1.0.0
 servers:
-  - url: http://{host}:{port}/api/
-    description: For development
+  - url: http://{host}:{port}/api/{version}/
+    description: For local
     variables:
       host:
         default: localhost
       port:
         default: "8080"
+      version:
+        default: v1
+components:
+  securitySchemes:
+    token:
+      type: apiKey
+      name: token
+      in: header
+      description: ID token obtained from FireBase
+
 paths:
   /test:
     get:
