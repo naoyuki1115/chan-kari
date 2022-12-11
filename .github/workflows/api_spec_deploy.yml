@@ -37,9 +37,9 @@ jobs:
       - name: install redoc
         run: npm install -g redoc-cli
       - name: build openAPI file
-        run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/index.html
+        run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/dev.html
       - name: Output file contents
-        run: cat ./docs/api/dist/index.html
+        run: cat ./docs/api/dist/dev.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
