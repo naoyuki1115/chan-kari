@@ -16,9 +16,8 @@ Frontend と Backend の2つのWebアプリケーションで構成
 - Image file upload
 
 ### 設計ドキュメント
-詳細な設計ドキュメントは `docs/` を参照
-- [API](docs/api/openapi.yaml)
-- [ER図](docs/er_diagram/sample.pu)
+詳細な設計ドキュメントは [設計ドキュメント](docs/README.md) および`docs/` を参照
+![system_structure](docs/system_structure/system_structure.png)
 
 
 ## Getting started
@@ -26,7 +25,7 @@ Frontend と Backend の2つのWebアプリケーションで構成
 frontend と backend はそれぞれ以下のディレクトで管理  
 環境構築および実行方法等も各ディレクト配下の `READEME.md` を参照
 - [Dockerインストール](docs/get_started/install_docker.md) (共通)
-- [docs/README.md](docs/README.md)
+- [docs/README.md](docs/README.md#ドキュメント確認方法)
 - [frontend/README.md](frontend/README.md)
 - [backend/README.md](backend/README.md)
 
