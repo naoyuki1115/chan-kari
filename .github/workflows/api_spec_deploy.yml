@@ -34,8 +34,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16
-      - name: install dependencies
-        run: npm ci
       - name: install redoc # Redocのインストール
         run: npm install -g redoc-cli
       - name: build openAPI file # OpenAPIの定義をHTMLに変換
