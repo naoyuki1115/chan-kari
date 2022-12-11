@@ -3,7 +3,7 @@ name: Deploy static content to Pages
 
 on:
   # Runs on pushes targeting the default branch
-  push:
+  pull_request:
     branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -37,19 +37,19 @@ jobs:
       - name: install redoc
         run: npm install -g redoc-cli
       - name: build openAPI file
-        run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/prod.html
+        run: redoc-cli bundle ./docs/api/openapi.yaml -o ./docs/api/dist/draft.html
       - name: Output file contents
-        run: cat ./docs/api/dist/prod.html
+        run: cat ./docs/api/dist/draft.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: "./docs/api/dist/"
+          path: "./docs/api/dist/draft.html"
   # Single deploy job since we're just deploying
   deploy:
     needs: build
     environment:
       name: chan-kari-api-doc
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}draft.html
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
