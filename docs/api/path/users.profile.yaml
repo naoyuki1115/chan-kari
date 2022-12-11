@@ -1,47 +1,48 @@
 paths:
-  get:
-    security:
-      - token: []
-    tags: ["profile"]
-    summary: Get user profile
-    description: Get user profile
-    responses:
-      "200":
-        description: Success of getting resources list
+  profile:
+    get:
+      security:
+        - token: []
+      tags: ["profile"]
+      summary: Get user profile
+      description: Get user profile
+      responses:
+        "200":
+          description: Success of getting resources list
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                  - nickName
+                  - email
+                properties:
+                  name:
+                    $ref: "../parameter/user.yaml#/components/parameters/name"
+                  nickName:
+                    $ref: "../parameter/user.yaml#/components/parameters/nickName"
+                  email:
+                    $ref: "../parameter/user.yaml#/components/parameters/email"
+                  imageUrl:
+                    $ref: "../parameter/user.yaml#/components/parameters/imageUrl"
+    put:
+      security:
+        - token: []
+      tags: ["profile"]
+      summary: Update user profile
+      description: Update user profile
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               required:
-                - name
                 - nickName
-                - email
               properties:
-                name:
-                  $ref: "../parameter/user.yaml#/components/parameters/name"
                 nickName:
                   $ref: "../parameter/user.yaml#/components/parameters/nickName"
-                email:
-                  $ref: "../parameter/user.yaml#/components/parameters/email"
-                imageUrl:
-                  $ref: "../parameter/user.yaml#/components/parameters/imageUrl"
-  put:
-    security:
-      - token: []
-    tags: ["profile"]
-    summary: Update user profile
-    description: Update user profile
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - nickName
-            properties:
-              nickName:
-                $ref: "../parameter/user.yaml#/components/parameters/nickName"
-    responses:
-      "204":
-        description: Success
+      responses:
+        "204":
+          description: Success
