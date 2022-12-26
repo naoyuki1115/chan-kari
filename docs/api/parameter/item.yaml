@@ -1,0 +1,27 @@
+components:
+  parameters:
+    id:
+      type: integer
+      description: item ID
+      example: 1
+    name:
+      type: string
+      description: item name
+      example: "item name"
+    status:
+      type: string
+      description: availability status of a item
+      enum: [available, unavailable, rented]
+      example: available
+    imageUrl:
+      type: string
+      description: image URL of FireBase
+      example: "http://example.com/test.png"
+    description:
+      type: string
+      description: description
+      example: "description"
+    author:
+      type: string
+      description: author
+      example: "author"
