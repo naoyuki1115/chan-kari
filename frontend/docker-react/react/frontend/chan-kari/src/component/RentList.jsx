@@ -4,17 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
-function Home() {
+function RentList() {
     return (
         <Container>
-            <Row>
-                <Col>
-                    <Alert key='dark' variant='dark'>
-                        自分のものを貸したり、友達のものを貸したりしよう
-                    </Alert>
-                </Col>
-            </Row>
-            <h3>レンタル可能品一覧</h3>
+
+            <h3>貸しているものリスト</h3>
             <Row xs={1} md={2} className="g-4">
                 {Array.from({ length: 8 }).map((_, idx) => (
                     <Col>
@@ -34,4 +28,4 @@ function Home() {
     );
 };
 
-export default Home;
+export default RentList;

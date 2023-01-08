@@ -1,7 +1,6 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import './Navigation.css';
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -34,7 +33,7 @@ function NavBottom() {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item href="/item_register">貸出品新規登録</Dropdown.Item>
-                                <Dropdown.Item>登録品リスト</Dropdown.Item>
+                                <Dropdown.Item href="/MyItemList">登録品リスト</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
 
