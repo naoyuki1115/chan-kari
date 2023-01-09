@@ -4,7 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import React from 'react';
+
 function ItemRegister() {
+    const [modalShow, setModalShow] = React.useState(false);
     return (
         <Container>
 
@@ -28,13 +32,55 @@ function ItemRegister() {
                     </Form.Group>
 
 
-                    <Button variant="primary" type="submit">
-                        Submit
+
+                    <Button variant="primary" onClick={() => setModalShow(true)}>
+                        登録
                     </Button>
+
+                    <MyVerticallyCenteredModal
+                        show={modalShow}
+                        onHide={() => setModalShow(false)}
+                    />
+
+
                 </Form>
             </Row>
         </Container>
     );
 };
+
+function MyVerticallyCenteredModal(props) {
+    return (
+        <Modal
+            {...props}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+        >
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    登録確認
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <h4>タイトル</h4>
+                <p>
+                    内容
+                </p>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button>登録</Button>
+                <Button onClick={props.onHide}>Close</Button>
+            </Modal.Footer>
+        </Modal>
+    );
+}
+
+
+
+
+
+
+
 
 export default ItemRegister;
