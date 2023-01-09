@@ -28,7 +28,7 @@ function Home() {
                                 <Card.Title>レンタル品</Card.Title>
                                 <Card.Text>
                                     <p>【貸出者：○○○】</p>
-                                    <Link to={homeUrl + "/ItemDetail/BookID"} state={{ fromPage: "homePage" }} >詳細</Link>
+                                    <Link to={homeUrl + "/ItemDetail/BookID"} state={{ fromPage: "HomePage" }} >詳細</Link>
                                 </Card.Text>
 
                             </Card.Body>

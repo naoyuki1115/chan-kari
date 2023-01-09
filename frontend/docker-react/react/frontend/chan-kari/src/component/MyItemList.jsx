@@ -23,7 +23,7 @@ function MyItemList() {
                                 <Card.Title>レンタル品</Card.Title>
                                 <Card.Text>
                                     <p>貸出OKor貸出中</p>
-                                    <Link to={homeUrl + "/ItemDetail/BookID"} state={{ fromPage: "Myitem" }} >詳細</Link>
+                                    <Link to={homeUrl + "/ItemDetail/BookID"} state={{ fromPage: "MyItemList" }} >詳細</Link>
                                 </Card.Text>
                             </Card.Body>
                         </Card>
