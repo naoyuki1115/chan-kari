@@ -11,6 +11,10 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import NavItem from 'react-bootstrap/NavItem';
 import NavLink from 'react-bootstrap/NavLink';
 
+
+
+const homeUrl = process.env.PUBLIC_URL;
+
 function NavBottom() {
     const handleSelect = (eventKey) => alert(`selected ${eventKey}`);
 
@@ -21,7 +25,7 @@ function NavBottom() {
                 <Navbar.Collapse id="basic-navbar-nav">
 
                     <Nav className="me-auto">
-                        <Nav.Link href="/">
+                        <Nav.Link href={homeUrl}>
                             <p><FontAwesomeIcon icon={faHome} /></p>
                             HOME
                         </Nav.Link>
@@ -32,12 +36,12 @@ function NavBottom() {
                                 登録
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item href="/ItemRegister">貸出品新規登録</Dropdown.Item>
-                                <Dropdown.Item href="/MyItemList">登録品リスト</Dropdown.Item>
+                                <Dropdown.Item href={homeUrl + "/ItemRegister"}>貸出品新規登録</Dropdown.Item>
+                                <Dropdown.Item href={homeUrl + "/MyItemList"}>登録品リスト</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
 
-                        <Nav.Link href="/Mypage">
+                        <Nav.Link href={homeUrl + "/Mypage"}>
                             <p><FontAwesomeIcon icon={faUser} /></p>
                             マイページ
                         </Nav.Link>

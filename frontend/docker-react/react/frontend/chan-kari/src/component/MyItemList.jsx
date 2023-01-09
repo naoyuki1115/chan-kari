@@ -4,6 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
+import { Link } from 'react-router-dom'
+
+
+const homeUrl = process.env.PUBLIC_URL;
+
 function MyItemList() {
     return (
         <Container>
@@ -17,7 +22,8 @@ function MyItemList() {
                             <Card.Body>
                                 <Card.Title>レンタル品</Card.Title>
                                 <Card.Text>
-                                    【貸出者：○○○】
+                                    <p>貸出OKor貸出中</p>
+                                    <Link to={homeUrl + "/ItemDetail/BookID"} state={{ fromPage: "Myitem" }} >詳細</Link>
                                 </Card.Text>
                             </Card.Body>
                         </Card>

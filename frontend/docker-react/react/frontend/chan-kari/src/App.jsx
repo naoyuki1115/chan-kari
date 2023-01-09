@@ -10,19 +10,45 @@ import RentList from './component/RentList';
 import BorrowList from './component/BorrowList';
 import MyItemList from './component/MyItemList';
 import ItemRegister from './component/ItemRegister';
+import ItemDetail from './component/ItemDetail';
+
+const homeUrl = process.env.PUBLIC_URL;
 
 export const App = () => {
   return (
     <div className="App">
       <NavTop />
 
-      const homeUrl = process.env.PUBLIC_URL;
+
 
       <Routes>
         <Route path={homeUrl} element={<Home />} />
       </Routes>
       <Routes>
         <Route path={homeUrl + "/mypage"} element={<MyPage />} />
+      </Routes>
+      <Routes>
+        <Route path={homeUrl + "/RentList"} element={<RentList />} />
+      </Routes>
+      <Routes>
+        <Route path={homeUrl + "/BorrowList"} element={<BorrowList />} />
+      </Routes>
+      <Routes>
+        <Route path={homeUrl + "/MyItemList"} element={<MyItemList />} />
+      </Routes>
+      <Routes>
+        <Route path={homeUrl + "/ItemRegister"} element={<ItemRegister />} />
+      </Routes>
+
+      <Routes>
+        <Route path={homeUrl + "/ItemDetail/:id"} element={<ItemDetail />} />
+      </Routes>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+      <Routes>
+        <Route path="/mypage" element={<MyPage />} />
       </Routes>
       <Routes>
         <Route path="/RentList" element={<RentList />} />

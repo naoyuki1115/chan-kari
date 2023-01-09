@@ -4,6 +4,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import Card from 'react-bootstrap/Card';
+import { Link } from 'react-router-dom'
+
+const homeUrl = process.env.PUBLIC_URL;
+
 function Home() {
     return (
         <Container>
@@ -23,14 +27,16 @@ function Home() {
                             <Card.Body>
                                 <Card.Title>レンタル品</Card.Title>
                                 <Card.Text>
-                                    【貸出者：○○○】
+                                    <p>【貸出者：○○○】</p>
+                                    <Link to={homeUrl + "/ItemDetail/BookID"} state={{ fromPage: "homePage" }} >詳細</Link>
                                 </Card.Text>
+
                             </Card.Body>
                         </Card>
                     </Col>
                 ))}
             </Row>
-        </Container>
+        </Container >
     );
 };
 

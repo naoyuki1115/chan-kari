@@ -7,6 +7,8 @@ import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image'
 import ListGroup from 'react-bootstrap/ListGroup';
 
+const homeUrl = process.env.PUBLIC_URL;
+
 function MyPage() {
     return (
         <Container>
@@ -21,10 +23,10 @@ function MyPage() {
 
             <Row>
                 <ListGroup defaultActiveKey="#link1">
-                    <ListGroup.Item action href="/RentList">
+                    <ListGroup.Item action href={homeUrl + "/RentList"}>
                         貸しているものリスト
                     </ListGroup.Item>
-                    <ListGroup.Item action href="/BorrowList">
+                    <ListGroup.Item action href={homeUrl + "/BorrowList"}>
                         借りているものリスト
                     </ListGroup.Item>
 
