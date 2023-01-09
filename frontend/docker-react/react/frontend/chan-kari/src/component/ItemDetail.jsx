@@ -45,12 +45,10 @@ function ItemDetail() {
                 <Col></Col>
             </Row>
             <Row>
-
-
-
                 <h2>{location.state.fromPage}</h2>
                 <ButtonSelect frompage={location.state.fromPage} />
             </Row>
+
 
         </Container>
 

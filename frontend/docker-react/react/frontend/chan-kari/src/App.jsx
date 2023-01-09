@@ -44,30 +44,12 @@ export const App = () => {
         <Route path={homeUrl + "/ItemDetail/:id"} element={<ItemDetail />} />
       </Routes>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-      <Routes>
-        <Route path="/mypage" element={<MyPage />} />
-      </Routes>
-      <Routes>
-        <Route path="/RentList" element={<RentList />} />
-      </Routes>
-      <Routes>
-        <Route path="/BorrowList" element={<BorrowList />} />
-      </Routes>
-      <Routes>
-        <Route path="/MyItemList" element={<MyItemList />} />
-      </Routes>
-      <Routes>
-        <Route path="/ItemRegister" element={<ItemRegister />} />
-      </Routes>
 
       <NavBottom />
+      <div className='App-Spacer'></div>
     </div>
   );
 };
-
 
 
 
