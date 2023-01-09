@@ -16,7 +16,7 @@ function NavTop() {
     const handleSelect = (eventKey) => alert(`selected ${eventKey}`);
 
     return (
-        <Navbar bg="light" >
+        <Navbar bg="light" sticky="top">
             <Container>
                 <Navbar.Brand href="/">チャンカリ</Navbar.Brand>
             </Container>

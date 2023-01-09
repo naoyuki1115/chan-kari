@@ -9,21 +9,20 @@ import MyPage from './component/MyPage';
 import RentList from './component/RentList';
 import BorrowList from './component/BorrowList';
 import MyItemList from './component/MyItemList';
+import ItemRegister from './component/ItemRegister';
 
 export const App = () => {
   return (
     <div className="App">
       <NavTop />
 
+      const homeUrl = process.env.PUBLIC_URL;
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path={homeUrl} element={<Home />} />
       </Routes>
       <Routes>
-        <Route path="/item_register" element={<Item_register />} />
-      </Routes>
-      <Routes>
-        <Route path="/mypage" element={<MyPage />} />
+        <Route path={homeUrl + "/mypage"} element={<MyPage />} />
       </Routes>
       <Routes>
         <Route path="/RentList" element={<RentList />} />
@@ -34,6 +33,9 @@ export const App = () => {
       <Routes>
         <Route path="/MyItemList" element={<MyItemList />} />
       </Routes>
+      <Routes>
+        <Route path="/ItemRegister" element={<ItemRegister />} />
+      </Routes>
 
       <NavBottom />
     </div>
@@ -42,9 +44,6 @@ export const App = () => {
 
 
 
-function Item_register() {
-  return <h2>貸出登録</h2>;
-}
 
 
 

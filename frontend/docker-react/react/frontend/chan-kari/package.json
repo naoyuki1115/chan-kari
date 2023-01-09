@@ -2,6 +2,7 @@
   "name": "chan-kari",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://boushipan.github.io/Chan-KariHosting",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
@@ -18,6 +19,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "postbuild": "cp build/index.html build/404.html",
     "start": "WATCHPACK_POLLING=true react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

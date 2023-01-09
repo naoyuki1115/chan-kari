@@ -32,7 +32,7 @@ function NavBottom() {
                                 登録
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item href="/item_register">貸出品新規登録</Dropdown.Item>
+                                <Dropdown.Item href="/ItemRegister">貸出品新規登録</Dropdown.Item>
                                 <Dropdown.Item href="/MyItemList">登録品リスト</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>

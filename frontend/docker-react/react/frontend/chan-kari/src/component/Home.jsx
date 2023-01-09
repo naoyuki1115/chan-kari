@@ -15,7 +15,7 @@ function Home() {
                 </Col>
             </Row>
             <h3>レンタル可能品一覧</h3>
-            <Row xs={1} md={2} className="g-4">
+            <Row xs={1} md={3} className="g-4">
                 {Array.from({ length: 8 }).map((_, idx) => (
                     <Col>
                         <Card>
