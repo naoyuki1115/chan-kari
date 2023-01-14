@@ -1,0 +1,114 @@
+@startuml crud_item
+
+Actor "User\n(browser)" as user
+participant "frontend" as fe
+participant "backend" as be
+database "DB" as db
+participant "FireBase \nStorage" as st
+
+== Register an item information ==
+
+user -> fe: Access registration item form page
+activate fe
+user -> fe: Input item information
+    user -> fe: Upload image
+    fe -> st: Upload image
+    activate st
+        st --> fe: Image URL
+    deactivate
+    fe -> be: POST a new registration
+    activate be
+        be -> db: Store an item information
+        activate db
+            db --> be:
+        deactivate
+        be --> fe: OK
+    deactivate
+    fe --> user: OK
+deactivate
+
+== Get an item information ==
+
+user -> fe: Access item detail page
+activate fe
+    fe -> be: GET an item detail
+    activate be
+        be -> db: Get an item information
+        activate db
+            db --> be: item information
+        deactivate
+        be --> fe: item information
+    deactivate
+
+    fe -> st: Get an image from image_url
+    activate st
+        st --> fe: Image
+    deactivate
+    fe -> fe: Render image
+    fe --> user: Item detail page
+deactivate
+
+== Update an item information ==
+
+user -> fe: Access update item form page
+activate fe
+    fe -> be: GET an item detail
+    activate be
+        be -> db: Get an item information
+        activate db
+            db --> be: item information
+        deactivate
+        be --> fe: item information
+    deactivate
+
+    user -> fe: Input item information
+    user -> fe: Upload image
+    fe -> st: Upload image
+    activate st
+        st --> fe: Image URL
+    deactivate
+    fe -> be: PUT updated an item information
+    activate be
+        be -> db: Update an item information
+        activate db
+            db --> be:
+        deactivate
+        be --> fe: OK
+    deactivate
+    fe -> st: Delete an old image by using old image_url
+    activate st
+        st --> fe: OK
+    deactivate
+    fe --> user: OK
+deactivate
+
+== Delete an item information ==
+
+user -> fe: Access delete item page
+activate fe
+    fe -> be: GET an item detail
+    activate be
+        be -> db: Get an item information
+        activate db
+            db --> be: item information
+        deactivate
+        be --> fe: item information
+    deactivate
+
+    fe -> be: DELETE an item information
+    activate be
+        be -> db: Delete an item information
+        activate db
+            db --> be:
+        deactivate
+        be --> fe: OK
+    deactivate
+
+    fe -> st: Delete an old image by using old image_url
+    activate st
+        st --> fe: OK
+    deactivate
+    fe --> user: OK
+deactivate
+
+@enduml
