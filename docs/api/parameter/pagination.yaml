@@ -1,0 +1,14 @@
+components:
+  parameters:
+    limit:
+      type: integer
+      description: A limit on the number of objects to be returned.
+      example: 10
+    after:
+      type: integer
+      description: Object ID (For example, item ID) as the cursor to be used in pagination.
+      example: 40
+    before:
+      type: integer
+      description: Object ID (For example, item ID) as the cursor to be used in pagination.
+      example: 31
