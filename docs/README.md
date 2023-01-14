@@ -45,8 +45,8 @@ Item画像はDB上には保存せず、FireBase Storage上に保存し、Upload�
 - Upload時: FireBaseアップロード後にDBへレコード追加
 - Delete時: DBのレコード削除後にFireBase上の画像を削除
 
-![crud_item](sequence/crud_process/curd_item.png)  
-[sequence/crud_process.pu](sequence/crud_process.pu)
+![crud_item](sequence/crud_item/crud_item.png)  
+[sequence/crud_process.pu](sequence/crud_item.pu)
 
 ### レンタルおよび返却フロー
 レンタル時はItemが利用できるか(他のユーザーによるレンタルとコンフリクトを起こしていないかなど)を確認したのち、新規rentalのレコードを追加する。  
