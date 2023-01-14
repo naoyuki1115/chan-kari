@@ -6,7 +6,7 @@ components:
       example: 1
     closed:
       type: boolean
-      description: status of a rental
+      description: status of a rental. `true` indicates that the item has been returned.
       example: false
     rental_date:
       type: date

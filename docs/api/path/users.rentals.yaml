@@ -8,7 +8,7 @@ paths:
       description: Get list of rentals which user current rented
       parameters:
         - name: closed
-          description: If it is set, user can get closed rental history
+          description: If it is set, user can get returned rental history
           in: query
           schema:
             $ref: "../parameter/rental.yaml#/components/parameters/closed"
