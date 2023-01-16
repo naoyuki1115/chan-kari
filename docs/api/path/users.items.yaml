@@ -1,0 +1,197 @@
+paths:
+  itemList:
+    get:
+      security:
+        - token: []
+      tags: ["owned item"]
+      summary: Get user owned items list
+      description: Get user owned items list
+      parameters:
+        - name: limit
+          description: A limit on the number of objects to be returned. If omitted, returns an object with an upper limit of 10.
+          in: query
+          schema:
+            $ref: "../parameter/pagination.yaml#/components/parameters/limit"
+        - name: after
+          description: Specifies an object ID as the cursor to be used in pagination. Objects **AFTER** this cursor are returned for the specified limit. **Only one of `after` or `before `may be used.**
+          in: query
+          schema:
+            $ref: "../parameter/pagination.yaml#/components/parameters/after"
+        - name: before
+          description: Specifies an object ID as the cursor to be used in pagination. Objects **BEFORE** this cursor are returned for the specified limit. **Only one of `after` or `before `may be used.**
+          in: query
+          schema:
+            $ref: "../parameter/pagination.yaml#/components/parameters/before"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - name
+                    - status
+                    - imageUrl
+                  properties:
+                    id:
+                      $ref: "../parameter/item.yaml#/components/parameters/id"
+                    name:
+                      $ref: "../parameter/item.yaml#/components/parameters/name"
+                    status:
+                      $ref: "../parameter/item.yaml#/components/parameters/status"
+                    imageUrl:
+                      $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+    post:
+      security:
+        - token: []
+      tags: ["owned item"]
+      summary: Register a new user owned item
+      description: Register a new user owned item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - status
+                - imageUrl
+                - description
+                - author
+              properties:
+                name:
+                  $ref: "../parameter/item.yaml#/components/parameters/name"
+                status:
+                  $ref: "../parameter/item.yaml#/components/parameters/status"
+                imageUrl:
+                  $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+                description:
+                  $ref: "../parameter/item.yaml#/components/parameters/description"
+                author:
+                  $ref: "../parameter/item.yaml#/components/parameters/author"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    $ref: "../parameter/item.yaml#/components/parameters/id"
+        "409":
+          description: Duplicate resource names
+  itemDetail:
+    get:
+      security:
+        - token: []
+      tags: ["owned item"]
+      summary: Get user owned item detail
+      description: Get user owned item detail
+      parameters:
+        - name: itemId
+          description: item ID
+          in: path
+          required: true
+          schema:
+            $ref: "../parameter/item.yaml#/components/parameters/id"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - status
+                  - imageUrl
+                  - description
+                  - author
+                properties:
+                  id:
+                    $ref: "../parameter/item.yaml#/components/parameters/id"
+                  name:
+                    $ref: "../parameter/item.yaml#/components/parameters/name"
+                  status:
+                    $ref: "../parameter/item.yaml#/components/parameters/status"
+                  imageUrl:
+                    $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+                  description:
+                    $ref: "../parameter/item.yaml#/components/parameters/description"
+                  author:
+                    $ref: "../parameter/item.yaml#/components/parameters/author"
+        "403":
+          description: It is not owned item.
+    put:
+      security:
+        - token: []
+      tags: ["owned item"]
+      summary: Update user owned item
+      description: Update user owned item
+      parameters:
+        - name: itemId
+          description: item ID
+          in: path
+          required: true
+          schema:
+            $ref: "../parameter/item.yaml#/components/parameters/id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - status
+                - imageUrl
+                - description
+                - author
+              properties:
+                name:
+                  $ref: "../parameter/item.yaml#/components/parameters/name"
+                status:
+                  $ref: "../parameter/item.yaml#/components/parameters/status"
+                imageUrl:
+                  $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+                description:
+                  $ref: "../parameter/item.yaml#/components/parameters/description"
+                author:
+                  $ref: "../parameter/item.yaml#/components/parameters/author"
+      responses:
+        "204":
+          description: Success
+        "403":
+          description: It is not owned item.
+        "404":
+          description: Item ID is not found
+        "409":
+          description: Duplicate resource names
+    delete:
+      security:
+        - token: []
+      tags: ["owned item"]
+      summary: Delete user owned item
+      description: Delete user owned item
+      parameters:
+        - name: itemId
+          description: item ID
+          in: path
+          schema:
+            $ref: "../parameter/item.yaml#/components/parameters/id"
+      responses:
+        "204":
+          description: Success
+        "403":
+          description: It is not owned item.
+        "404":
+          description: Item ID is not found

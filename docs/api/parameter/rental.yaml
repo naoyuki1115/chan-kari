@@ -1,0 +1,22 @@
+components:
+  parameters:
+    id:
+      type: integer
+      description: rental ID
+      example: 1
+    closed:
+      type: boolean
+      description: status of a rental. `true` indicates that the item has been returned.
+      example: false
+    rental_date:
+      type: date
+      description: rental date
+      example: "2022-06-06"
+    return_plan_date:
+      type: date
+      description: return date
+      example: "2022-06-06"
+    return_date:
+      type: date
+      description: return date
+      example: "2022-06-06"
