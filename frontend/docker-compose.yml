@@ -2,7 +2,7 @@ version: '3'
 
 services:
   frontend:
-    container_name: "docker-react"
+    container_name: "docker-react_chankari"
     build: ./react/
     environment:
       - NODE_ENV=development
