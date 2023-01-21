@@ -1,0 +1,49 @@
+@startuml authentication
+
+Actor "User\n(browser)" as user
+participant "frontend" as fe
+participant "backend" as be
+participant "FireBase \nAuthentication" as auth
+
+user -> fe: Access
+group FireBase SDK process
+    activate fe
+        fe -> fe: Check user login status
+        fe --> user: 
+    deactivate
+    user -> auth: Redirect to social login page
+    activate auth
+        auth --> user
+        user -> auth: Login by social account (Google)
+        auth --> user
+    deactivate
+    user -> fe: Redirect to frontend
+    activate fe
+        fe -> auth: Request token
+        activate auth
+            auth --> fe: ID token
+        deactivate
+        fe --> user: Login complete
+    deactivate
+    user -> user: Save ID token
+end
+user -> fe: Use application
+activate fe
+    fe -> be: Request something with ID token
+    activate be
+        be -> be: Verify ID token \nusing FireBase private key
+        alt Case of Authentication Success
+            be -> be: Upsert user information to DB \nfrom decoded ID token
+            be -> be: Get some data from DB
+            be --> fe: Response Something
+            fe --> user: Show some page
+        
+        else Case of Authentication Failure
+            be --> fe: Response failure (403)
+            fe --> user: Redirect to login page
+            ref over user, auth: Login process again\n
+        end
+    deactivate
+deactivate
+
+@enduml

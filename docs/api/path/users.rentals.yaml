@@ -1,0 +1,187 @@
+paths:
+  rentalList:
+    get:
+      security:
+        - token: []
+      tags: ["rental item"]
+      summary: Get list of rentals which user current rented
+      description: Get list of rentals which user current rented
+      parameters:
+        - name: closed
+          description: If it is set, user can get returned rental history
+          in: query
+          schema:
+            $ref: "../parameter/rental.yaml#/components/parameters/closed"
+        - name: limit
+          description: A limit on the number of objects to be returned. If omitted, returns an object with an upper limit of 10.
+          in: query
+          schema:
+            $ref: "../parameter/pagination.yaml#/components/parameters/limit"
+        - name: after
+          description: Specifies an object ID as the cursor to be used in pagination. Objects **AFTER** this cursor are returned for the specified limit. **Only one of `after` or `before `may be used.**
+          in: query
+          schema:
+            $ref: "../parameter/pagination.yaml#/components/parameters/after"
+        - name: before
+          description: Specifies an object ID as the cursor to be used in pagination. Objects **BEFORE** this cursor are returned for the specified limit. **Only one of `after` or `before `may be used.**
+          in: query
+          schema:
+            $ref: "../parameter/pagination.yaml#/components/parameters/before"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - closed
+                    - rental_date
+                    - return_plan_date
+                    - return_date
+                    - itemId
+                    - itemName
+                  properties:
+                    id:
+                      $ref: "../parameter/rental.yaml#/components/parameters/id"
+                    closed:
+                      $ref: "../parameter/rental.yaml#/components/parameters/closed"
+                    rental_date:
+                      $ref: "../parameter/rental.yaml#/components/parameters/rental_date"
+                    return_plan_date:
+                      $ref: "../parameter/rental.yaml#/components/parameters/return_plan_date"
+                    return_date:
+                      $ref: "../parameter/rental.yaml#/components/parameters/return_date"
+                    itemId:
+                      $ref: "../parameter/item.yaml#/components/parameters/id"
+                    itemName:
+                      $ref: "../parameter/item.yaml#/components/parameters/name"
+    post:
+      security:
+        - token: []
+      tags: ["rental item"]
+      summary: Rent an item
+      description: Rent an item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - itemId
+                - rental_date
+                - return_plan_date
+              properties:
+                itemId:
+                  $ref: "../parameter/item.yaml#/components/parameters/id"
+                rental_date:
+                  $ref: "../parameter/rental.yaml#/components/parameters/rental_date"
+                return_plan_date:
+                  $ref: "../parameter/rental.yaml#/components/parameters/return_plan_date"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    $ref: "../parameter/rental.yaml#/components/parameters/id"
+        "403":
+          description: Don't be allowed to rent this Item
+        "404":
+          description: Item ID is not found
+        "409":
+          description: Item is already rented by another user
+
+  rentalDetail:
+    get:
+      security:
+        - token: []
+      tags: ["rental item"]
+      summary: Get user rental detail
+      description: Get user rental detail
+      parameters:
+        - name: rentalId
+          description: rental ID
+          required: true
+          in: path
+          schema:
+            $ref: "../parameter/rental.yaml#/components/parameters/id"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - closed
+                    - rental_date
+                    - return_plan_date
+                    - return_date
+                    - item
+                  properties:
+                    closed:
+                      $ref: "../parameter/rental.yaml#/components/parameters/closed"
+                    rental_date:
+                      $ref: "../parameter/rental.yaml#/components/parameters/rental_date"
+                    return_plan_date:
+                      $ref: "../parameter/rental.yaml#/components/parameters/return_plan_date"
+                    return_date:
+                      $ref: "../parameter/rental.yaml#/components/parameters/return_date"
+                    item:
+                      type: object
+                      description: item information
+                      required:
+                        - id
+                        - name
+                        - imageUrl
+                        - description
+                        - author
+                      properties:
+                        id:
+                          $ref: "../parameter/item.yaml#/components/parameters/id"
+                        name:
+                          $ref: "../parameter/item.yaml#/components/parameters/name"
+                        imageUrl:
+                          $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+                        description:
+                          $ref: "../parameter/item.yaml#/components/parameters/description"
+                        author:
+                          $ref: "../parameter/item.yaml#/components/parameters/author"
+        "403":
+          description: Rental ID is not your rental
+        "404":
+          description: Rental ID is not found
+  rentalReturn:
+    put:
+      security:
+        - token: []
+      tags: ["rental item"]
+      summary: Return an item
+      description: Return an item
+      parameters:
+        - name: rentalId
+          description: rental ID
+          required: true
+          in: path
+          schema:
+            $ref: "../parameter/rental.yaml#/components/parameters/id"
+      responses:
+        "204":
+          description: Success
+        "403":
+          description: Rental ID is not your rental
+        "404":
+          description: Rental ID is not found
