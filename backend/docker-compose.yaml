@@ -7,6 +7,9 @@ services:
         container_name: chankari-backend
         volumes:
             - ./:/app/src
+        working_dir: /app/src
         ports:
-            - 8085:8085
+            - 8000:8000
+        environment:
+            - WATCHFILES_FORCE_POLLING=true
         tty: true
