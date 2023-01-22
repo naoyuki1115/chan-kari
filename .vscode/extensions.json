@@ -10,6 +10,7 @@
         "esbenp.prettier-vscode",
         "ms-vscode-remote.vscode-remote-extensionpack",
         "gruntfuggly.todo-tree",
-        "ms-vsliveshare.vsliveshare"
+        "ms-vsliveshare.vsliveshare",
+        "ms-python.black-formatter"
     ]
 }

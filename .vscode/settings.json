@@ -16,5 +16,11 @@
         "--ignore=E203,W503,W504"
     ],
     // Formatterの設定
-    "python.formatting.provider": "black",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    }
 }
