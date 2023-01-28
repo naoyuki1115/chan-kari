@@ -23,11 +23,11 @@ entity "rentals" {
   --
   * item_id: <<FK>> [items.id]
   * user_id: <<FK>> [users.id]
-  * rental_at: date
+  * rented_at: date
   * return_plan_date: date
-  return_at: date
+  returned_at: date
   --
-  unique[item_id, user_id, rental_date, return_date]
+  unique[item_id, user_id, rented_at]\n WHERE returned_at is NULL
 }
 
 users ||-l-o{ rentals
