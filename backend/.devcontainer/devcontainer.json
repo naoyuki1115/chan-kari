@@ -1,7 +1,9 @@
 {
     "name": "ChanKari_Python",
-    "dockerFile": "../Dockerfile",
-    // "dockerComposeFile": "../docker-compose.yml",
+    // "dockerFile": "../Dockerfile",
+    "dockerComposeFile": "../docker-compose.yaml",
+    "workspaceFolder": "/backend",
+    "service": "backend",
     "extensions": [
         "ms-python.python",
         "ms-python.vscode-pylance",
