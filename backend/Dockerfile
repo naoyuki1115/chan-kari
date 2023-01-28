@@ -22,4 +22,4 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages/
 COPY --from=builder /app/src /app/src
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
