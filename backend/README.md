@@ -5,7 +5,7 @@
 ### 開発環境の起動/停止
 backend開発用dockerコンテナ起動
 ```sh
-cd /backend
+cd backend
 docker compose up --build
 ```
 別terminalでdockerコンテナ内のbashに入る

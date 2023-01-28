@@ -2,7 +2,7 @@
     "name": "ChanKari_Python",
     // "dockerFile": "../Dockerfile",
     "dockerComposeFile": "../docker-compose.yaml",
-    "workspaceFolder": "/backend",
+    "workspaceFolder": "/app/src",
     "service": "backend",
     "extensions": [
         "ms-python.python",

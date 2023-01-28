@@ -15,8 +15,8 @@ services:
             target: dev
         container_name: chankari-backend
         volumes:
-            - ./:/app/src
-        working_dir: /app/src
+            - ../:/app/src
+        working_dir: /app/src/backend
         ports:
             - 8000:8000
         environment:
