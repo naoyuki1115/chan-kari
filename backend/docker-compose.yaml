@@ -1,0 +1,28 @@
+version: "3"
+services:
+    db:
+        image: postgres:13
+        container_name: chankari-db
+        ports:
+            - 5430:5432
+        env_file:
+            - .env/local
+        volumes:
+            - ./database/init:/docker-entrypoint-initdb.d
+    backend:
+        build:
+            context: .
+            target: dev
+        container_name: chankari-backend
+        volumes:
+            - ../:/app/src
+        working_dir: /app/src/backend
+        ports:
+            - 8000:8000
+        environment:
+            - WATCHFILES_FORCE_POLLING=true
+        tty: true
+        depends_on:
+            - db
+        env_file:
+            - .env/local
