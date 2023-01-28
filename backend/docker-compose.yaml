@@ -6,7 +6,7 @@ services:
         ports:
             - 5430:5432
         env_file:
-            - .env/local_postgres
+            - .env/local
         volumes:
             - ./database/init:/docker-entrypoint-initdb.d
     backend:
@@ -25,5 +25,4 @@ services:
         depends_on:
             - db
         env_file:
-            - .env/local_postgres
-
+            - .env/local
