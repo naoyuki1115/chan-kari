@@ -40,3 +40,7 @@ Thumbs.db
 ######################
 backend/.env/*
 !backend/.env/local
+
+# python #
+################
+*.pyc
