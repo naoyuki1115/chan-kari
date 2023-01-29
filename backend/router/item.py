@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from schema.item import ItemListRequest, ItemResponse, Status
 
 router = APIRouter(
     prefix="/items",
@@ -6,5 +7,7 @@ router = APIRouter(
 
 
 @router.get("")
-def list():
-    pass
+def list(req: ItemListRequest = Depends()) -> list[ItemResponse]:
+    return [
+        ItemResponse(id=req.limit, status=Status["rented"], name="test", imageUrl=None)
+    ]
