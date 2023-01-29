@@ -15,13 +15,15 @@ def get_list(
     before: Optional[int],
 ) -> list[ItemResponse]:
     items: list[model.Item] = store.item.list_available(db, limit, after, before)
-    valid_rentals: list[model.Rental] = store.rental.list_rented(db)
+    not_returned_rentals: list[model.Rental] = store.rental.list_not_returned(db)
 
     item_res_list: list[ItemResponse] = []
     for item in items:
         if not item.available:
             status: ItemStatus = ItemStatus.unavailable
-        elif len(list(filter(lambda r: r.item_id == item.id, valid_rentals))) != 0:
+        elif (
+            len(list(filter(lambda r: r.item_id == item.id, not_returned_rentals))) != 0
+        ):
             status: ItemStatus = ItemStatus.rented
         else:
             status: ItemStatus = ItemStatus.available
