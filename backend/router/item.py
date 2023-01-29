@@ -17,7 +17,6 @@ def list_item(
         raise HTTPException(
             status_code=400, detail="Only either Before or After can be specified"
         )
-    print(req)
     return usecase.item.get_list(
         db, bool(req.available), req.limit, req.after, req.before
     )
