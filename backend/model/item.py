@@ -13,10 +13,10 @@ class Item(Base, Timestamp):
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
         nullable=False,
     )
-    user = relationship("User", back_populates="items")
+    users = relationship("User", back_populates="items")
     available = Column(Boolean, nullable=False)
     image_url = Column(String, nullable=True)
     description = Column(String, nullable=True)
     author = Column(String, nullable=True)
 
-    rental = relationship("Rental", back_populates="items")
+    rentals = relationship("Rental", back_populates="items")

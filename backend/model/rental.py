@@ -13,13 +13,13 @@ class Rental(Base, Timestamp):
         ForeignKey("users.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    user = relationship("User", back_populates="rentals")
+    users = relationship("User", back_populates="rentals")
     item_id = Column(
         Integer,
         ForeignKey("items.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    item = relationship("Item", back_populates="rentals")
+    items = relationship("Item", back_populates="rentals")
     rented_at = Column(Date, nullable=False)
     return_plan_date = Column(Date, nullable=False)
     returned_at = Column(Date, nullable=True)

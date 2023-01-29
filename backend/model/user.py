@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-
 from model import Base
 from model.timestamp import Timestamp
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 
 class User(Base, Timestamp):
@@ -12,5 +11,5 @@ class User(Base, Timestamp):
     email = Column(String, nullable=False, unique=True)
     image_url = Column(String, nullable=True)
 
-    item = relationship("Item", back_populates="users")
-    rental = relationship("Rental", back_populates="users")
+    items = relationship("Item", back_populates="users")
+    rentals = relationship("Rental", back_populates="users")
