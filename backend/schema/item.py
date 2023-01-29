@@ -6,14 +6,14 @@ from pydantic import BaseModel, Field
 from schema.pagination import PaginationQuery
 
 
-class Status(str, Enum):
+class ItemStatus(str, Enum):
     available = "available"
     unavailable = "unavailable"
     rented = "rented"
 
 
 class ItemListQuery(BaseModel):
-    status: Optional[Status] = Field(Query(default=None))
+    available: Optional[str] = Field(Query(default=None))
 
 
 class ItemListRequest(ItemListQuery, PaginationQuery):
@@ -23,5 +23,11 @@ class ItemListRequest(ItemListQuery, PaginationQuery):
 class ItemResponse(BaseModel):
     id: int
     name: str
-    status: Status
+    status: ItemStatus
     imageUrl: Optional[str] = Field(None, example="http://example.com/test.png")
+
+    def __init__(self, id, name, status, imageUrl) -> None:
+        self.id = id
+        self.name = name
+        self.status = status
+        self.imageUrl = imageUrl
