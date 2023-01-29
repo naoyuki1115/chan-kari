@@ -1,3 +1,5 @@
+from typing import Optional
+
 import model
 import store.item
 import store.rental
@@ -5,8 +7,14 @@ from schema.item import ItemResponse, ItemStatus
 from sqlalchemy.orm import Session
 
 
-def get_list(db: Session, rental_available: bool) -> list[ItemResponse]:
-    items: list[model.Item] = store.item.list_available(db)
+def get_list(
+    db: Session,
+    rental_available: bool,
+    limit: int,
+    after: Optional[int],
+    before: Optional[int],
+) -> list[ItemResponse]:
+    items: list[model.Item] = store.item.list_available(db, limit, after, before)
     valid_rentals: list[model.Rental] = store.rental.list_rented(db)
 
     item_res_list: list[ItemResponse] = []
