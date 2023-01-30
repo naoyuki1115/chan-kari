@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 def list_not_returned(db: Session) -> list[model.Rental]:
     return (
         db.query(model.Rental)
-        .filter(model.Rental.returned_at is not None)
-        .order_by(desc(model.Rental.id))
+        .filter(model.Rental.returned_at == None)
+        .order_by(model.Rental.id)
         .all()
     )
