@@ -10,7 +10,7 @@ def list_available(
 ) -> list[model.Item]:
     q = (
         db.query(model.Item)
-        .filter(model.Item.available is True)
+        .filter(model.Item.available == True)
         .order_by(desc(model.Item.id))
         .limit(limit)
     )
