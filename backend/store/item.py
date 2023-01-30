@@ -11,11 +11,10 @@ def list_available(
     q = (
         db.query(model.Item)
         .filter(model.Item.available == True)
-        .order_by(desc(model.Item.id))
-        .limit(limit)
+        .order_by(model.Item.id)
     )
     if after is not None:
-        return q.offset(after).all()
+        q = q.offset(after)
     elif before is not None:
-        return q.offset(before).all()
-    return q.all()
+        q = q.filter(model.Item.id < before)
+    return q.limit(limit).all()
