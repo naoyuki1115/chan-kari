@@ -15,7 +15,7 @@ def list_item(
 ) -> list[ItemResponse]:
     if req.after is not None and req.before is not None:
         raise HTTPException(
-            status_code=400, detail="Only either Before or After can be specified"
+            status_code=400, detail="Only either `before` or `after` can be specified"
         )
     return usecase.item.get_list(
         db, bool(req.available), req.limit, req.after, req.before

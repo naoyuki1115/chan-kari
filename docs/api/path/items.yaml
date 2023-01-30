@@ -48,6 +48,8 @@ paths:
                       $ref: "../parameter/item.yaml#/components/parameters/status"
                     imageUrl:
                       $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+        "400":
+          description: "Only either `before` or `after` can be specified"
   itemDetail:
     get:
       tags: ["item"]
