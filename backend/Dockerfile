@@ -16,12 +16,17 @@ RUN pip install --upgrade pip && \
 # for production
 FROM python:3.11-slim-bullseye AS prod
 
-WORKDIR /app/src
+WORKDIR /app
+
+COPY . /app/
+
+COPY --from=dev /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=dev /usr/local/bin/uvicorn /usr/local/bin/uvicorn 
 
 RUN apt-get update && apt-get install -y \
-    libpq-dev
+    libpq-dev && \
+    apt-get clean
 
-COPY --from=dev /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages/
-COPY --from=dev /app/src /app/src
+EXPOSE 8000
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
