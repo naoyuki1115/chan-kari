@@ -6,17 +6,17 @@ from sqlalchemy.orm import relationship
 
 class Item(Base, Timestamp):
     __tablename__ = "items"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String, nullable=False)
-    owner_id = Column(
+    id: int = Column(Integer, primary_key=True, autoincrement=True)  # type:ignore
+    name: str = Column(String, nullable=False)  # type:ignore
+    owner_id: int = Column(
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"),
         nullable=False,
-    )
-    users = relationship("User", back_populates="items")
-    available = Column(Boolean, nullable=False)
-    image_url = Column(String, nullable=True)
-    description = Column(String, nullable=True)
-    author = Column(String, nullable=True)
+    )  # type:ignore
+    available: bool = Column(Boolean, nullable=False)  # type:ignore
+    image_url: str = Column(String, nullable=True)  # type:ignore
+    description: str = Column(String, nullable=True)  # type:ignore
+    author: str = Column(String, nullable=True)  # type:ignore
 
+    users = relationship("User", back_populates="items")
     rentals = relationship("Rental", back_populates="items")
