@@ -16,5 +16,10 @@ def list_available(
     if after is not None:
         q = q.offset(after)
     elif before is not None:
-        q = q.filter(model.Item.id < before)
+        if before > limit:
+            offset = before - limit
+        else:
+            offset = 0
+            limit = before - 1
+        q = q.offset(offset)
     return q.limit(limit).all()
