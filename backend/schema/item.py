@@ -25,9 +25,3 @@ class ItemResponse(BaseModel):
     name: str
     status: ItemStatus
     imageUrl: Optional[str] = Field(None, example="http://example.com/test.png")
-
-    def __init__(self, id, name, status, imageUrl) -> None:
-        self.id = id
-        self.name = name
-        self.status = status
-        self.imageUrl = imageUrl
