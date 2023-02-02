@@ -5,11 +5,11 @@ paths:
       summary: Get item list
       description: Get item list
       parameters:
-        - name: status
-          description: Availability status of a item. If it is set, user can filter the list by item status.
+        - name: available
+          description: Availability status of a item. If it is set, user can get the list of items available for rent.
           in: query
           schema:
-            $ref: "../parameter/item.yaml#/components/parameters/status"
+            $ref: "../parameter/item.yaml#/components/parameters/rentalAvailable"
         - name: limit
           description: A limit on the number of objects to be returned. If omitted, returns an object with an upper limit of 10.
           in: query
@@ -48,6 +48,8 @@ paths:
                       $ref: "../parameter/item.yaml#/components/parameters/status"
                     imageUrl:
                       $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+        "400":
+          description: "Only either `before` or `after` can be specified"
   itemDetail:
     get:
       tags: ["item"]

@@ -13,6 +13,10 @@ components:
       description: availability status of a item
       enum: [available, unavailable, rented]
       example: available
+    rentalAvailable:
+      type: boolean
+      description: items availability for rent
+      example: true
     imageUrl:
       type: string
       description: image URL of FireBase
