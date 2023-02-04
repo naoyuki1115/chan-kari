@@ -1,39 +1,51 @@
-from typing import Optional
+import abc
 
 import model
-import store.item
-import store.rental
-from schema.item import ItemResponse, ItemStatus
-from sqlalchemy.orm import Session
+from schema import ItemListRequest, ItemResponse, ItemStatus
+from store import ItemStore, RentalStore
 
 
-def get_list(
-    db: Session,
-    rental_available: bool,
-    limit: int,
-    after: Optional[int],
-    before: Optional[int],
-) -> list[ItemResponse]:
-    items: list[model.Item] = store.item.list_available(db, limit, after, before)
-    not_returned_rentals: list[model.Rental] = store.rental.list_not_returned(db)
+class ItemUseCaseInterface(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def get_list(
+        self,
+        req: ItemListRequest,
+    ) -> list[ItemResponse]:
+        raise NotImplementedError
 
-    item_res_list: list[ItemResponse] = []
-    for item in items:
-        if not item.available:
-            status: ItemStatus = ItemStatus.unavailable
-        elif (
-            len(list(filter(lambda r: r.item_id == item.id, not_returned_rentals))) != 0
-        ):
-            status: ItemStatus = ItemStatus.rented
-        else:
-            status: ItemStatus = ItemStatus.available
-        item_res_list.append(
-            ItemResponse(
-                id=item.id, name=item.name, status=status, imageUrl=item.image_url
-            )
+
+class ItemUseCase(ItemUseCaseInterface):
+    def __init__(self, item: ItemStore, rental: RentalStore):
+        self.item_store: ItemStore = item
+        self.rental_store: RentalStore = rental
+
+    def get_list(
+        self,
+        req: ItemListRequest,
+    ) -> list[ItemResponse]:
+        items: list[model.Item] = self.item_store.list_available(
+            req.limit, req.after, req.before
         )
+        not_returned_rentals: list[model.Rental] = self.rental_store.list_not_returned()
 
-    if rental_available:
-        return list(filter(lambda i: i.status == ItemStatus.available, item_res_list))
+        item_res_list: list[ItemResponse] = []
+        for item in items:
+            if not item.available:
+                status: ItemStatus = ItemStatus.unavailable
+            elif (
+                len(list(filter(lambda r: r.item_id == item.id, not_returned_rentals)))
+                != 0
+            ):
+                status: ItemStatus = ItemStatus.rented
+            else:
+                status: ItemStatus = ItemStatus.available
+            item_res_list.append(
+                ItemResponse.new(item.id, item.name, status, item.image_url)
+            )
 
-    return item_res_list
+        if bool(req.available):
+            return list(
+                filter(lambda i: i.status == ItemStatus.available, item_res_list)
+            )
+
+        return item_res_list

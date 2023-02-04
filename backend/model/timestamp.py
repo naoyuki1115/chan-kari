@@ -1,12 +1,13 @@
 from datetime import datetime
+from typing import Union
 
 from sqlalchemy import Column, DateTime
 
 
 class Timestamp(object):
-    created_at: DateTime = Column(
+    created_at: Union[DateTime, Column] = Column(
         DateTime, nullable=False, default=datetime.now()
-    )  # type:ignore
-    updated_at: DateTime = Column(
+    )
+    updated_at: Union[DateTime, Column] = Column(
         DateTime, nullable=False, default=datetime.now(), onupdate=datetime.now()
-    )  # type:ignore
+    )
