@@ -25,3 +25,7 @@ class ItemResponse(BaseModel):
     name: str
     status: ItemStatus
     imageUrl: Optional[str] = Field(None, example="http://example.com/test.png")
+
+    @classmethod
+    def new(cls, id, name, status, image_url):
+        return cls(id=id, name=name, status=status, imageUrl=image_url)
