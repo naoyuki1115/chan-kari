@@ -1,12 +1,9 @@
+from database.database import create_table
 from fastapi import FastAPI
-
-from database.database import engine
-from model import Base
 from router import item, rental, user
 
 # migrate table
-Base.metadata.create_all(engine)
-
+create_table()
 
 app = FastAPI()
 app.include_router(user.router)
