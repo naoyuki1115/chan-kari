@@ -1,4 +1,5 @@
 from database.database import get_db
+from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
 from schema import ItemListRequest, ItemResponse
 from sqlalchemy.orm import Session
@@ -12,9 +13,10 @@ router = APIRouter(
 
 
 def new_item_usecase(db: Session = Depends(get_db)) -> ItemUseCaseInterface:
+    tx: TransactionInterface = Transaction(db)
     item_store: ItemStoreInterface = ItemStore(db)
     renal_store: RentalStoreInterface = RentalStore(db)
-    return ItemUseCase(item_store, renal_store)
+    return ItemUseCase(tx, item_store, renal_store)
 
 
 @router.get("", response_model=list[ItemResponse])
