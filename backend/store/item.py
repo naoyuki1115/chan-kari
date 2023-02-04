@@ -41,20 +41,23 @@ class ItemStore(ItemStoreInterface):
     def list_available(
         self, limit: int, after: Optional[int], before: Optional[int]
     ) -> list[model.Item]:
-        q = self.db.query(model.Item).filter(model.Item.available == True)  # NOQA
-        if after is not None:
-            return q.order_by(model.Item.id).offset(after).limit(limit).all()
-        elif before is not None:
-            items = (
-                q.order_by(desc(model.Item.id))
-                .filter(model.Item.id < before)
-                .limit(limit)
-                .all()
-            )
-            items.reverse()
-            return items
-        else:
-            return q.order_by(model.Item.id).limit(limit).all()
+        try:
+            q = self.db.query(model.Item).filter(model.Item.available == True)  # NOQA
+            if after is not None:
+                return q.order_by(model.Item.id).offset(after).limit(limit).all()
+            elif before is not None:
+                items = (
+                    q.order_by(desc(model.Item.id))
+                    .filter(model.Item.id < before)
+                    .limit(limit)
+                    .all()
+                )
+                items.reverse()
+                return items
+            else:
+                return q.order_by(model.Item.id).limit(limit).all()
+        except Exception:
+            raise
 
     def list(self) -> list[model.Item]:
         raise NotImplementedError()
