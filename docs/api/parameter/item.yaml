@@ -13,6 +13,10 @@ components:
       description: availability status of a item
       enum: [available, unavailable, rented]
       example: available
+    draft:
+      type: boolean
+      description: draft status. If draft is true, item is unavailable for rent.
+      example: false
     rentalAvailable:
       type: boolean
       description: items availability for rent
