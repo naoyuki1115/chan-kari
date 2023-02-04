@@ -14,15 +14,15 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def list(self) -> None:
+    def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def detail(self) -> None:
+    def detail(self, id) -> Optional[model.Item]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def create(self) -> None:
+    def create(self, item: model.Item) -> None:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -56,14 +56,17 @@ class ItemStore(ItemStoreInterface):
         else:
             return q.order_by(model.Item.id).limit(limit).all()
 
-    def list(self) -> None:
+    def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
-    def detail(self) -> None:
+    def detail(self) -> Optional[model.Item]:
         raise NotImplementedError()
 
-    def create(self) -> None:
-        raise NotImplementedError()
+    def create(self, item: model.Item) -> None:
+        try:
+            self.db.add(item)
+        except Exception:
+            raise
 
     def update(self) -> None:
         raise NotImplementedError()
