@@ -1,3 +1,5 @@
+from typing import Union
+
 from model import Base
 from model.timestamp import Timestamp
 from sqlalchemy import Column, Date, ForeignKey, Index, Integer
@@ -6,20 +8,20 @@ from sqlalchemy.orm import relationship
 
 class Rental(Base, Timestamp):
     __tablename__ = "rentals"
-    id: int = Column(Integer, primary_key=True, autoincrement=True)  # type:ignore
-    user_id: int = Column(
+    id: Union[int, Column] = Column(Integer, primary_key=True, autoincrement=True)
+    user_id: Union[int, Column] = Column(
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
-    )  # type:ignore
-    item_id: int = Column(
+    )
+    item_id: Union[int, Column] = Column(
         Integer,
         ForeignKey("items.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
-    )  # type:ignore
-    rented_at: Date = Column(Date, nullable=False)  # type:ignore
-    return_plan_date: Date = Column(Date, nullable=False)  # type:ignore
-    returned_at: Date = Column(Date, nullable=True)  # type:ignore
+    )
+    rented_at: Union[Date, Column] = Column(Date, nullable=False)
+    return_plan_date: Union[Date, Column] = Column(Date, nullable=False)
+    returned_at: Union[Date, Column] = Column(Date, nullable=True)
 
     users = relationship("User", back_populates="rentals")
     items = relationship("Item", back_populates="rentals")
