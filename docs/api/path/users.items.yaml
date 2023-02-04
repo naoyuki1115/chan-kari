@@ -60,9 +60,6 @@ paths:
               required:
                 - name
                 - draft
-                - imageUrl
-                - description
-                - author
               properties:
                 name:
                   $ref: "../parameter/item.yaml#/components/parameters/name"
@@ -153,9 +150,6 @@ paths:
               required:
                 - name
                 - status
-                - imageUrl
-                - description
-                - author
               properties:
                 name:
                   $ref: "../parameter/item.yaml#/components/parameters/name"
