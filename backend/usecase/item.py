@@ -2,8 +2,13 @@ import abc
 
 import model
 from database.transaction import TransactionInterface
-from schema import ItemListRequest, ItemResponse, ItemStatus
-from store import ItemStore, RentalStore
+from schema import (
+    ItemCreateRequest,
+    ItemCreateResponse,
+    ItemListRequest,
+    ItemResponse,
+    ItemStatus,
+)
 from store import ItemStoreInterface, RentalStoreInterface
 
 
@@ -13,6 +18,10 @@ class ItemUseCaseInterface(metaclass=abc.ABCMeta):
         self,
         req: ItemListRequest,
     ) -> list[ItemResponse]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
         raise NotImplementedError
 
 
@@ -60,3 +69,21 @@ class ItemUseCase(ItemUseCaseInterface):
             )
 
         return item_res_list
+
+    def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
+        try:
+            item = model.Item(
+                name=req.name,
+                owner_id=user_id,
+                available=not req.draft,
+                image_url=req.imageUrl,
+                description=req.description,
+                author=req.author,
+            )
+            self.item_store.create(item)
+            self.tx.commit()
+        except Exception:
+            self.tx.rollback()
+            raise
+        print(item)
+        return ItemCreateResponse.new(item.id)
