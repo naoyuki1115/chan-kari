@@ -34,3 +34,37 @@ def create_item(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
     return item
+
+
+@router.get("")
+def list_owned():
+    return [
+        {
+            "id": 1,
+            "name": "item name",
+            "status": "available",
+            "imageUrl": "http://example.com/test.png",
+        }
+    ]
+
+
+@router.get("/{item_id}")
+def owned_item(item_id: int):
+    return {
+        "id": item_id,
+        "name": "item name",
+        "status": "available",
+        "imageUrl": "http://example.com/test.png",
+        "description": "description",
+        "author": "author",
+    }
+
+
+@router.put("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def change_item():
+    pass
+
+
+@router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def del_item():
+    pass

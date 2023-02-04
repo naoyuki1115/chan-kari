@@ -37,3 +37,17 @@ def list_item(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
     return items
+
+
+@router.get("/{item_id}")
+def item(item_id: int):
+    return {
+        "id": item_id,
+        "name": "item name",
+        "status": "available",
+        "imageUrl": "http://example.com/test.png",
+        "description": "description",
+        "author": "author",
+        "ownerId": 1,
+        "ownerNickName": "nick name",
+    }
