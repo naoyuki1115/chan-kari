@@ -5,6 +5,7 @@ from schema.item import (
     ItemResponse,
     ItemStatus,
 )
+from schema.rental import RentRequest, RentResponse
 
 __all__ = [
     "ItemStatus",
@@ -12,4 +13,6 @@ __all__ = [
     "ItemResponse",
     "ItemCreateRequest",
     "ItemCreateResponse",
+    "RentRequest",
+    "RentResponse",
 ]
