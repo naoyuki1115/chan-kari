@@ -1,7 +1,7 @@
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
-from schema import ItemListRequest, ItemResponse
+from schema import ItemCreateRequest, ItemCreateResponse
 from sqlalchemy.orm import Session
 from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
 from usecase import ItemUseCase, ItemUseCaseInterface
@@ -19,28 +19,37 @@ def new_item_usecase(db: Session = Depends(get_db)) -> ItemUseCaseInterface:
     return ItemUseCase(tx, item_store, renal_store)
 
 
-@router.get("", response_model=list[ItemResponse])
-def list_item(
-    req: ItemListRequest = Depends(),
+@router.post("", response_model=ItemCreateResponse)
+def create_item(
+    req: ItemCreateRequest,
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
-) -> list[ItemResponse]:
-    if req.after is not None and req.before is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only either `before` or `after` can be specified",
-        )
+) -> ItemCreateResponse:
     try:
-        items = item_usecase.get_list(req)
+        # TODO: headerのトークンからユーザーID取得
+        test_user_id = 1
+        item = item_usecase.create_item(req, test_user_id)
     except Exception as e:
         get_logger(__name__).error(e)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return items
+    return item
+
+
+@router.get("")
+def list_owned():
+    return [
+        {
+            "id": 1,
+            "name": "item name",
+            "status": "available",
+            "imageUrl": "http://example.com/test.png",
+        }
+    ]
 
 
 @router.get("/{item_id}")
-def item(item_id: int):
+def owned_item(item_id: int):
     return {
         "id": item_id,
         "name": "item name",
@@ -48,6 +57,14 @@ def item(item_id: int):
         "imageUrl": "http://example.com/test.png",
         "description": "description",
         "author": "author",
-        "ownerId": 1,
-        "ownerNickName": "nick name",
     }
+
+
+@router.put("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def change_item():
+    pass
+
+
+@router.delete("/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def del_item():
+    pass

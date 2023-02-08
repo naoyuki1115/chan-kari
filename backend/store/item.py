@@ -14,15 +14,15 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def list(self) -> None:
+    def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def detail(self) -> None:
+    def detail(self, id) -> Optional[model.Item]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def create(self) -> None:
+    def create(self, item: model.Item) -> None:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -41,29 +41,35 @@ class ItemStore(ItemStoreInterface):
     def list_available(
         self, limit: int, after: Optional[int], before: Optional[int]
     ) -> list[model.Item]:
-        q = self.db.query(model.Item).filter(model.Item.available == True)  # NOQA
-        if after is not None:
-            return q.order_by(model.Item.id).offset(after).limit(limit).all()
-        elif before is not None:
-            items = (
-                q.order_by(desc(model.Item.id))
-                .filter(model.Item.id < before)
-                .limit(limit)
-                .all()
-            )
-            items.reverse()
-            return items
-        else:
-            return q.order_by(model.Item.id).limit(limit).all()
+        try:
+            q = self.db.query(model.Item).filter(model.Item.available == True)  # NOQA
+            if after is not None:
+                return q.order_by(model.Item.id).offset(after).limit(limit).all()
+            elif before is not None:
+                items = (
+                    q.order_by(desc(model.Item.id))
+                    .filter(model.Item.id < before)
+                    .limit(limit)
+                    .all()
+                )
+                items.reverse()
+                return items
+            else:
+                return q.order_by(model.Item.id).limit(limit).all()
+        except Exception:
+            raise
 
-    def list(self) -> None:
+    def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
-    def detail(self) -> None:
+    def detail(self) -> Optional[model.Item]:
         raise NotImplementedError()
 
-    def create(self) -> None:
-        raise NotImplementedError()
+    def create(self, item: model.Item) -> None:
+        try:
+            self.db.add(item)
+        except Exception:
+            raise
 
     def update(self) -> None:
         raise NotImplementedError()

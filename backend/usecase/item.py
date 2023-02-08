@@ -1,8 +1,15 @@
 import abc
 
 import model
-from schema import ItemListRequest, ItemResponse, ItemStatus
-from store import ItemStore, RentalStore
+from database.transaction import TransactionInterface
+from schema import (
+    ItemCreateRequest,
+    ItemCreateResponse,
+    ItemListRequest,
+    ItemResponse,
+    ItemStatus,
+)
+from store import ItemStoreInterface, RentalStoreInterface
 
 
 class ItemUseCaseInterface(metaclass=abc.ABCMeta):
@@ -13,35 +20,48 @@ class ItemUseCaseInterface(metaclass=abc.ABCMeta):
     ) -> list[ItemResponse]:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
+        raise NotImplementedError
+
 
 class ItemUseCase(ItemUseCaseInterface):
-    def __init__(self, item: ItemStore, rental: RentalStore):
-        self.item_store: ItemStore = item
-        self.rental_store: RentalStore = rental
+    def __init__(
+        self,
+        tx: TransactionInterface,
+        item: ItemStoreInterface,
+        rental: RentalStoreInterface,
+    ):
+        self.tx: TransactionInterface = tx
+        self.item_store: ItemStoreInterface = item
+        self.rental_store: RentalStoreInterface = rental
 
     def get_list(
         self,
         req: ItemListRequest,
     ) -> list[ItemResponse]:
-        items: list[model.Item] = self.item_store.list_available(
-            req.limit, req.after, req.before
-        )
-        not_returned_rentals: list[model.Rental] = self.rental_store.list_not_returned()
-
-        item_res_list: list[ItemResponse] = []
-        for item in items:
-            if not item.available:
-                status: ItemStatus = ItemStatus.unavailable
-            elif (
-                len(list(filter(lambda r: r.item_id == item.id, not_returned_rentals)))
-                != 0
-            ):
-                status: ItemStatus = ItemStatus.rented
-            else:
-                status: ItemStatus = ItemStatus.available
-            item_res_list.append(
-                ItemResponse.new(item.id, item.name, status, item.image_url)
+        try:
+            items: list[model.Item] = self.item_store.list_available(
+                req.limit, req.after, req.before
             )
+            valid_rentals: list[model.Rental] = self.rental_store.list_valid()
+
+            item_res_list: list[ItemResponse] = []
+            for item in items:
+                if not item.available:
+                    status: ItemStatus = ItemStatus.unavailable
+                elif (
+                    len(list(filter(lambda r: r.item_id == item.id, valid_rentals)))
+                    != 0
+                ):
+                    status: ItemStatus = ItemStatus.rented
+                else:
+                    status: ItemStatus = ItemStatus.available
+                item_res_list.append(
+                    ItemResponse.new(item.id, item.name, status, item.image_url)
+                )
+        except Exception:
+            raise
 
         if bool(req.available):
             return list(
@@ -49,3 +69,21 @@ class ItemUseCase(ItemUseCaseInterface):
             )
 
         return item_res_list
+
+    def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
+        try:
+            item = model.Item(
+                name=req.name,
+                owner_id=user_id,
+                available=not req.draft,
+                image_url=req.imageUrl,
+                description=req.description,
+                author=req.author,
+            )
+            self.item_store.create(item)
+            self.tx.commit()
+        except Exception:
+            self.tx.rollback()
+            raise
+        print(item)
+        return ItemCreateResponse.new(item.id)

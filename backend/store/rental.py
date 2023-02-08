@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 class RentalStoreInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def list_not_returned(self) -> list[model.Item]:
+    def list_valid(self) -> list[model.Rental]:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -34,7 +34,7 @@ class RentalStore(RentalStoreInterface):
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def list_not_returned(self) -> list[model.Rental]:
+    def list_valid(self) -> list[model.Rental]:
         return (
             self.db.query(model.Rental)
             .filter(model.Rental.returned_at == None)  # NOQA

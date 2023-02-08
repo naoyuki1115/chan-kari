@@ -59,15 +59,12 @@ paths:
               type: object
               required:
                 - name
-                - status
-                - imageUrl
-                - description
-                - author
+                - draft
               properties:
                 name:
                   $ref: "../parameter/item.yaml#/components/parameters/name"
-                status:
-                  $ref: "../parameter/item.yaml#/components/parameters/status"
+                draft:
+                  $ref: "../parameter/item.yaml#/components/parameters/draft"
                 imageUrl:
                   $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
                 description:
@@ -153,9 +150,6 @@ paths:
               required:
                 - name
                 - status
-                - imageUrl
-                - description
-                - author
               properties:
                 name:
                   $ref: "../parameter/item.yaml#/components/parameters/name"
