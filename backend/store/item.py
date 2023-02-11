@@ -3,7 +3,9 @@ from typing import Optional
 
 import model
 from sqlalchemy import desc
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class ItemStoreInterface(metaclass=abc.ABCMeta):
@@ -63,11 +65,18 @@ class ItemStore(ItemStoreInterface):
         raise NotImplementedError()
 
     def detail(self, id: int) -> Optional[model.Item]:
-        raise NotImplementedError()
+        try:
+            return self.db.query(model.Item).filter(model.Item.id == id).one()
+        except NoResultFound:
+            return None
+        except Exception:
+            raise
 
     def create(self, item: model.Item) -> None:
         try:
             self.db.add(item)
+        except IntegrityError as err:
+            raise err.orig
         except Exception:
             raise
 

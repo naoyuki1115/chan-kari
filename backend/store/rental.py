@@ -1,6 +1,7 @@
 import abc
 
 import model
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 
@@ -35,12 +36,15 @@ class RentalStore(RentalStoreInterface):
         self.db = session
 
     def list_valid(self) -> list[model.Rental]:
-        return (
-            self.db.query(model.Rental)
-            .filter(model.Rental.returned_date == None)  # NOQA
-            .order_by(model.Rental.id)
-            .all()
-        )
+        try:
+            return (
+                self.db.query(model.Rental)
+                .filter(model.Rental.returned_date == None)  # NOQA
+                .order_by(model.Rental.id)
+                .all()
+            )
+        except Exception:
+            raise
 
     def list(self) -> None:
         raise NotImplementedError()
@@ -49,7 +53,12 @@ class RentalStore(RentalStoreInterface):
         raise NotImplementedError()
 
     def create(self, rental: model.Rental) -> None:
-        raise NotImplementedError()
+        try:
+            self.db.add(rental)
+        except IntegrityError as err:
+            raise err.orig
+        except Exception:
+            raise
 
     def update(self) -> None:
         raise NotImplementedError()

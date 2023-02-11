@@ -2,6 +2,7 @@ import abc
 
 import model
 from database.transaction import TransactionInterface
+from psycopg2.errors import UniqueViolation
 from schema import RentRequest, RentResponse
 from store import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import (
@@ -46,6 +47,8 @@ class RentalUseCase(RentalUseCaseInterface):
             )
             self.rental_store.create(rental)
             self.tx.commit()
+        except UniqueViolation:
+            raise ResourceUnavailableError
         except Exception:
             self.tx.rollback()
             raise
