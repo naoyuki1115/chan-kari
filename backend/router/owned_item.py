@@ -5,11 +5,14 @@ from schema import ItemCreateRequest, ItemCreateResponse
 from sqlalchemy.orm import Session
 from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
 from usecase import ItemUseCase, ItemUseCaseInterface
+from util.error_msg import NotFoundError
 from util.logging import get_logger
 
 router = APIRouter(
     prefix="/items",
 )
+
+logger = get_logger()
 
 
 def new_item_usecase(db: Session = Depends(get_db)) -> ItemUseCaseInterface:
@@ -26,10 +29,13 @@ def create_item(
 ) -> ItemCreateResponse:
     try:
         # TODO: headerのトークンからユーザーID取得
-        test_user_id = 1
-        item = item_usecase.create_item(req, test_user_id)
-    except Exception as e:
-        get_logger(__name__).error(e)
+        user_id = 1
+        item = item_usecase.create_item(req, user_id)
+    except NotFoundError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
+    except Exception as err:
+        logger.error(f"({__name__}): {err}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )

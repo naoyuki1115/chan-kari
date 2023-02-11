@@ -11,6 +11,8 @@ router = APIRouter(
     prefix="/items",
 )
 
+logger = get_logger()
+
 
 def new_item_usecase(db: Session = Depends(get_db)) -> ItemUseCaseInterface:
     tx: TransactionInterface = Transaction(db)
@@ -31,8 +33,8 @@ def list_item(
         )
     try:
         items = item_usecase.get_list(req)
-    except Exception as e:
-        get_logger(__name__).error(e)
+    except Exception as err:
+        logger.error(f"({__name__}): {err}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
