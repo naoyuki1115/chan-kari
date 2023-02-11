@@ -18,7 +18,7 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def detail(self, id) -> Optional[model.Item]:
+    def detail(self, id: int) -> Optional[model.Item]:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -62,7 +62,7 @@ class ItemStore(ItemStoreInterface):
     def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
-    def detail(self) -> Optional[model.Item]:
+    def detail(self, id: int) -> Optional[model.Item]:
         raise NotImplementedError()
 
     def create(self, item: model.Item) -> None:

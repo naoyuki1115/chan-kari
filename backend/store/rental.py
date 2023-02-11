@@ -18,7 +18,7 @@ class RentalStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def create(self) -> None:
+    def create(self, rental: model.Rental) -> None:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -48,7 +48,7 @@ class RentalStore(RentalStoreInterface):
     def detail(self) -> None:
         raise NotImplementedError()
 
-    def create(self) -> None:
+    def create(self, rental: model.Rental) -> None:
         raise NotImplementedError()
 
     def update(self) -> None:
