@@ -14,10 +14,7 @@ from store import ItemStoreInterface, RentalStoreInterface
 
 class ItemUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def get_list(
-        self,
-        req: ItemListRequest,
-    ) -> list[ItemResponse]:
+    def get_list(self, req: ItemListRequest) -> list[ItemResponse]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -36,10 +33,7 @@ class ItemUseCase(ItemUseCaseInterface):
         self.item_store: ItemStoreInterface = item
         self.rental_store: RentalStoreInterface = rental
 
-    def get_list(
-        self,
-        req: ItemListRequest,
-    ) -> list[ItemResponse]:
+    def get_list(self, req: ItemListRequest) -> list[ItemResponse]:
         try:
             items: list[model.Item] = self.item_store.list_available(
                 req.limit, req.after, req.before
@@ -85,5 +79,4 @@ class ItemUseCase(ItemUseCaseInterface):
         except Exception:
             self.tx.rollback()
             raise
-        print(item)
         return ItemCreateResponse.new(item.id)
