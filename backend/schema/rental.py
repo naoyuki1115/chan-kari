@@ -11,3 +11,7 @@ class RentRequest(BaseModel):
 
 class RentResponse(BaseModel):
     id: int
+
+    @classmethod
+    def new(cls, id):
+        return cls(id=id)

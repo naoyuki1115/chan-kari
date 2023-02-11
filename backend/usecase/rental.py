@@ -2,19 +2,23 @@ import abc
 
 import model
 from database.transaction import TransactionInterface
-from psycopg2.errors import UniqueViolation
+from psycopg2.errors import ForeignKeyViolation, UniqueViolation
 from schema import RentRequest, RentResponse
 from store import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import (
     NotFoundError,
     OperationIsForbiddenError,
+    ResourceAlreadyExistsError,
     ResourceUnavailableError,
 )
+from util.logging import get_logger
+
+logger = get_logger()
 
 
 class RentalUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def create_rental(self, req: RentRequest, user_id: int) -> list[RentResponse]:
+    def create_rental(self, req: RentRequest, user_id: int) -> RentResponse:
         raise NotImplementedError
 
 
@@ -22,14 +26,14 @@ class RentalUseCase(RentalUseCaseInterface):
     def __init__(
         self,
         tx: TransactionInterface,
-        rental: RentalStoreInterface,
         item: ItemStoreInterface,
+        rental: RentalStoreInterface,
     ):
         self.tx: TransactionInterface = tx
-        self.rental_store: RentalStoreInterface = rental
         self.item_store: ItemStoreInterface = item
+        self.rental_store: RentalStoreInterface = rental
 
-    def create_rental(self, req: RentRequest, user_id: int) -> list[RentResponse]:
+    def create_rental(self, req: RentRequest, user_id: int) -> RentResponse:
         try:
             item: model.Item = self.item_store.detail(req.itemId)
             if item is None:
@@ -47,9 +51,16 @@ class RentalUseCase(RentalUseCaseInterface):
             )
             self.rental_store.create(rental)
             self.tx.commit()
-        except UniqueViolation:
-            raise ResourceUnavailableError
-        except Exception:
+            return RentResponse.new(rental.id)
+        except UniqueViolation as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise ResourceAlreadyExistsError
+        except ForeignKeyViolation as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise NotFoundError
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             self.tx.rollback()
             raise
-        return rental

@@ -2,6 +2,7 @@ import abc
 
 import model
 from database.transaction import TransactionInterface
+from psycopg2.errors import ForeignKeyViolation
 from schema import (
     ItemCreateRequest,
     ItemCreateResponse,
@@ -10,6 +11,10 @@ from schema import (
     ItemStatus,
 )
 from store import ItemStoreInterface, RentalStoreInterface
+from util.error_msg import NotFoundError
+from util.logging import get_logger
+
+logger = get_logger()
 
 
 class ItemUseCaseInterface(metaclass=abc.ABCMeta):
@@ -54,7 +59,8 @@ class ItemUseCase(ItemUseCaseInterface):
                 item_res_list.append(
                     ItemResponse.new(item.id, item.name, status, item.image_url)
                 )
-        except Exception:
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             raise
 
         if bool(req.available):
@@ -76,7 +82,12 @@ class ItemUseCase(ItemUseCaseInterface):
             )
             self.item_store.create(item)
             self.tx.commit()
-        except Exception:
+            return ItemCreateResponse.new(item.id)
+        except ForeignKeyViolation as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise NotFoundError
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             self.tx.rollback()
             raise
-        return ItemCreateResponse.new(item.id)

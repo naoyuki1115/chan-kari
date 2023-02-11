@@ -17,3 +17,17 @@ class OperationIsForbiddenError(Exception):
 
     def __str__(self):
         return OperationIsForbiddenError.message
+
+
+class ResourceLockedError(Exception):
+    message = "The specified resource is locked."
+
+    def __str__(self):
+        return ResourceLockedError.message
+
+
+class ResourceAlreadyExistsError(Exception):
+    message = "The specified resource already exists"
+
+    def __str__(self):
+        return ResourceAlreadyExistsError.message

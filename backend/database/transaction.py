@@ -1,5 +1,6 @@
 import abc
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 
@@ -25,7 +26,10 @@ class Transaction(TransactionInterface):
         self.db.begin()
 
     def commit(self):
-        self.db.commit()
+        try:
+            self.db.commit()
+        except IntegrityError as err:
+            raise err.orig
 
     def rollback(self):
         self.db.rollback()
