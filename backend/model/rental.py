@@ -29,9 +29,7 @@ class Rental(Base, Timestamp):
     __table_args__ = (
         Index(
             "uix_rental_when_returned_at_is_null",
-            "user_id",
             "item_id",
-            "rented_at",
             unique=True,
             postgresql_where=returned_at.is_(None),  # type:ignore
         ),

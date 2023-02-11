@@ -27,7 +27,7 @@ entity "rentals" {
   * return_plan_date: date
   returned_at: date
   --
-  unique[item_id, user_id, rented_at]\n WHERE returned_at is NULL
+  unique[item_id] WHERE returned_at is NULL
 }
 
 users ||-l-o{ rentals
