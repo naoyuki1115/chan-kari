@@ -35,7 +35,7 @@ class RentalUseCase(RentalUseCaseInterface):
 
     def create_rental(self, req: RentRequest, user_id: int) -> RentResponse:
         try:
-            item: model.Item = self.item_store.detail(req.itemId)
+            item: model.Item = self.item_store.detail(req.item_id)
             if item is None:
                 raise NotFoundError
             if item.owner_id == user_id:
@@ -45,9 +45,9 @@ class RentalUseCase(RentalUseCaseInterface):
 
             rental = model.Rental(
                 user_id=user_id,
-                item_id=req.itemId,
-                rented_date=req.rentalDate,
-                return_plan_date=req.returnPlanDate,
+                item_id=req.item_id,
+                rented_date=req.rental_date,
+                return_plan_date=req.return_plan_date,
             )
             self.rental_store.create(rental)
             self.tx.commit()
