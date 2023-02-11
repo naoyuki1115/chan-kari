@@ -1,5 +1,5 @@
 import logging
 
 
-def get_logger(name: str) -> logging.Logger:
-    return logging.getLogger(name)
+def get_logger() -> logging.Logger:
+    return logging.getLogger("uvicorn")

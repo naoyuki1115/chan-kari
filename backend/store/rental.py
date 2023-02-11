@@ -1,8 +1,10 @@
 import abc
 
 import model
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from util.logging import get_logger
+
+logger = get_logger()
 
 
 class RentalStoreInterface(metaclass=abc.ABCMeta):
@@ -43,7 +45,8 @@ class RentalStore(RentalStoreInterface):
                 .order_by(model.Rental.id)
                 .all()
             )
-        except Exception:
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             raise
 
     def list(self) -> None:
@@ -55,9 +58,8 @@ class RentalStore(RentalStoreInterface):
     def create(self, rental: model.Rental) -> None:
         try:
             self.db.add(rental)
-        except IntegrityError as err:
-            raise err.orig
-        except Exception:
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             raise
 
     def update(self) -> None:
