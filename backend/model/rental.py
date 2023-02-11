@@ -19,18 +19,18 @@ class Rental(Base, Timestamp):
         ForeignKey("items.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    rented_at: Union[Date, Column] = Column(Date, nullable=False)
+    rented_date: Union[Date, Column] = Column(Date, nullable=False)
     return_plan_date: Union[Date, Column] = Column(Date, nullable=False)
-    returned_at: Union[Date, Column] = Column(Date, nullable=True)
+    returned_date: Union[Date, Column] = Column(Date, nullable=True)
 
     users = relationship("User", back_populates="rentals")
     items = relationship("Item", back_populates="rentals")
 
     __table_args__ = (
         Index(
-            "uix_rental_when_returned_at_is_null",
+            "uix_rental_when_returned_date_is_null",
             "item_id",
             unique=True,
-            postgresql_where=returned_at.is_(None),  # type:ignore
+            postgresql_where=returned_date.is_(None),  # type:ignore
         ),
     )

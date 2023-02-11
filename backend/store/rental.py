@@ -37,7 +37,7 @@ class RentalStore(RentalStoreInterface):
     def list_valid(self) -> list[model.Rental]:
         return (
             self.db.query(model.Rental)
-            .filter(model.Rental.returned_at == None)  # NOQA
+            .filter(model.Rental.returned_date == None)  # NOQA
             .order_by(model.Rental.id)
             .all()
         )

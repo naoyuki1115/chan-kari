@@ -23,9 +23,9 @@ entity "rentals" {
   --
   * item_id: <<FK>> [items.id]
   * user_id: <<FK>> [users.id]
-  * rented_at: date
+  * rented_date: date
   * return_plan_date: date
-  returned_at: date
+  returned_date: date
   --
   unique[item_id] WHERE returned_at is NULL
 }
