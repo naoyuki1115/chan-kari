@@ -1,12 +1,12 @@
 from datetime import date
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RentRequest(BaseModel):
-    itemId: int
-    rentalDate: date
-    returnPlanDate: date
+    item_id: int = Field(alias="itemId")
+    rental_date: date = Field(alias="rentalDate")
+    return_plan_date: date = Field(alias="returnPlanDate")
 
 
 class RentResponse(BaseModel):
