@@ -64,16 +64,24 @@ def rent_item(
         rental = rental_usecase.create_rental(req, user_id)
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item ID is not found"
+        )
     except OperationIsForbiddenError as err:
         logger.error(f"({__name__}): {err}")
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=err.message)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Don't be allowed to rent this Item",
+        )
     except ResourceUnavailableError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
     except ResourceAlreadyExistsError as err:
         logger.error(f"({__name__}): {err}")
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=err.message)
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Item is already rented by another user",
+        )
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
