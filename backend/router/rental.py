@@ -1,7 +1,7 @@
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
-from schema import RentRequest, RentResponse
+from schema import RentRequest, RentResponse, ReturnParams
 from sqlalchemy.orm import Session
 from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
 from usecase import RentalUseCase, RentalUseCaseInterface
@@ -61,7 +61,7 @@ def rent_item(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        rental = rental_usecase.create_rental(req, user_id)
+        rental = rental_usecase.rent_item(req, user_id)
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
@@ -90,6 +90,17 @@ def rent_item(
     return rental
 
 
-@router.put("/{rental_id}/return", status_code=status.HTTP_204_NO_CONTENT)
-def return_rental():
-    pass
+@router.put("/{rentalId}/return", status_code=status.HTTP_204_NO_CONTENT)
+def return_rental(
+    params: ReturnParams = Depends(),
+    rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
+):
+    try:
+        # TODO: headerのトークンからユーザーID取得
+        user_id = 1
+        rental_usecase.return_item(params, user_id)
+    except Exception as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

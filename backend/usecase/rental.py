@@ -3,7 +3,7 @@ import abc
 import model
 from database.transaction import TransactionInterface
 from psycopg2.errors import ForeignKeyViolation, UniqueViolation
-from schema import RentRequest, RentResponse
+from schema import RentRequest, RentResponse, ReturnParams
 from store import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import (
     NotFoundError,
@@ -18,7 +18,10 @@ logger = get_logger()
 
 class RentalUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def create_rental(self, req: RentRequest, user_id: int) -> RentResponse:
+    def rent_item(self, req: RentRequest, user_id: int) -> RentResponse:
+        raise NotImplementedError
+
+    def return_item(self, params: ReturnParams, user_id: int) -> None:
         raise NotImplementedError
 
 
@@ -33,7 +36,7 @@ class RentalUseCase(RentalUseCaseInterface):
         self.item_store: ItemStoreInterface = item
         self.rental_store: RentalStoreInterface = rental
 
-    def create_rental(self, req: RentRequest, user_id: int) -> RentResponse:
+    def rent_item(self, req: RentRequest, user_id: int) -> RentResponse:
         try:
             item: model.Item = self.item_store.detail(req.item_id)
             if item is None:
@@ -64,3 +67,6 @@ class RentalUseCase(RentalUseCaseInterface):
             logger.error(f"({__name__}): {err}")
             self.tx.rollback()
             raise
+
+    def return_item(self, params: ReturnParams, user_id: int) -> None:
+        raise NotImplementedError
