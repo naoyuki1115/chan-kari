@@ -185,3 +185,5 @@ paths:
           description: Rental ID is not your rental
         "404":
           description: Rental ID is not found
+        "409":
+          description: This Rental is already returned

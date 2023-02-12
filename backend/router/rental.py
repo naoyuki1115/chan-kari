@@ -97,8 +97,25 @@ def return_rental(
 ):
     try:
         # TODO: headerのトークンからユーザーID取得
-        user_id = 1
+        user_id = 3
         rental_usecase.return_item(params, user_id)
+    except NotFoundError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Rental ID is not found"
+        )
+    except OperationIsForbiddenError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This rental ID is not your rental",
+        )
+    except ResourceAlreadyExistsError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This Rental is already returned",
+        )
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
