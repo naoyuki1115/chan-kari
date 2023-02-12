@@ -48,7 +48,7 @@ class ItemUseCase(ItemUseCaseInterface):
             item_res_list: list[ItemResponse] = []
             for item in items:
                 if not item.available:
-                    status: ItemStatus = ItemStatus.unavailable
+                    continue
                 elif (
                     len(list(filter(lambda r: r.item_id == item.id, valid_rentals)))
                     != 0
@@ -59,16 +59,14 @@ class ItemUseCase(ItemUseCaseInterface):
                 item_res_list.append(
                     ItemResponse.new(item.id, item.name, status, item.image_url)
                 )
+            if bool(params.available):
+                return list(
+                    filter(lambda i: i.status == ItemStatus.available, item_res_list)
+                )
+            return item_res_list
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
-
-        if bool(params.available):
-            return list(
-                filter(lambda i: i.status == ItemStatus.available, item_res_list)
-            )
-
-        return item_res_list
 
     def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
         try:
