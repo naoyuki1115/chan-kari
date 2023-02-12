@@ -2,6 +2,9 @@ import abc
 
 import model
 from sqlalchemy.orm import Session
+from util.logging import get_logger
+
+logger = get_logger()
 
 
 class RentalStoreInterface(metaclass=abc.ABCMeta):
@@ -18,7 +21,7 @@ class RentalStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def create(self) -> None:
+    def create(self, rental: model.Rental) -> None:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -35,12 +38,16 @@ class RentalStore(RentalStoreInterface):
         self.db = session
 
     def list_valid(self) -> list[model.Rental]:
-        return (
-            self.db.query(model.Rental)
-            .filter(model.Rental.returned_at == None)  # NOQA
-            .order_by(model.Rental.id)
-            .all()
-        )
+        try:
+            return (
+                self.db.query(model.Rental)
+                .filter(model.Rental.returned_date == None)  # NOQA
+                .order_by(model.Rental.id)
+                .all()
+            )
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
 
     def list(self) -> None:
         raise NotImplementedError()
@@ -48,8 +55,12 @@ class RentalStore(RentalStoreInterface):
     def detail(self) -> None:
         raise NotImplementedError()
 
-    def create(self) -> None:
-        raise NotImplementedError()
+    def create(self, rental: model.Rental) -> None:
+        try:
+            self.db.add(rental)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
 
     def update(self) -> None:
         raise NotImplementedError()

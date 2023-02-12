@@ -12,19 +12,17 @@ class ItemStatus(str, Enum):
     rented = "rented"
 
 
-class ItemListQuery(BaseModel):
+class ItemListParams(PaginationQuery):
     available: Optional[str] = Field(Query(default=None))
-
-
-class ItemListRequest(ItemListQuery, PaginationQuery):
-    pass
 
 
 class ItemResponse(BaseModel):
     id: int
     name: str
     status: ItemStatus
-    imageUrl: Optional[str] = Field(None, example="http://example.com/test.png")
+    image_url: Optional[str] = Field(
+        None, alias="imageUrl", example="http://example.com/test.png"
+    )
 
     @classmethod
     def new(cls, id, name, status, image_url):
@@ -34,7 +32,9 @@ class ItemResponse(BaseModel):
 class ItemCreateRequest(BaseModel):
     name: str
     draft: bool
-    imageUrl: Optional[str] = Field(None, example="http://example.com/test.png")
+    image_url: Optional[str] = Field(
+        None, alias="imageUrl", example="http://example.com/test.png"
+    )
     description: Optional[str] = Field(None)
     author: Optional[str] = Field(None)
 

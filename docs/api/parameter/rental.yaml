@@ -8,15 +8,15 @@ components:
       type: boolean
       description: status of a rental. `true` indicates that the item has been returned.
       example: false
-    rental_date:
+    rentalDate:
       type: date
       description: rental date
       example: "2022-06-06"
-    return_plan_date:
+    returnPlanDate:
       type: date
       description: return date
       example: "2022-06-06"
-    return_date:
+    returnDate:
       type: date
       description: return date
       example: "2022-06-06"

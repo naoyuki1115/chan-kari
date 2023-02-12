@@ -39,9 +39,9 @@ paths:
                   required:
                     - id
                     - closed
-                    - rental_date
-                    - return_plan_date
-                    - return_date
+                    - rentalDate
+                    - returnPlanDate
+                    - returnDate
                     - itemId
                     - itemName
                   properties:
@@ -49,12 +49,12 @@ paths:
                       $ref: "../parameter/rental.yaml#/components/parameters/id"
                     closed:
                       $ref: "../parameter/rental.yaml#/components/parameters/closed"
-                    rental_date:
-                      $ref: "../parameter/rental.yaml#/components/parameters/rental_date"
-                    return_plan_date:
-                      $ref: "../parameter/rental.yaml#/components/parameters/return_plan_date"
-                    return_date:
-                      $ref: "../parameter/rental.yaml#/components/parameters/return_date"
+                    rentalDate:
+                      $ref: "../parameter/rental.yaml#/components/parameters/rentalDate"
+                    returnPlanDate:
+                      $ref: "../parameter/rental.yaml#/components/parameters/returnPlanDate"
+                    returnDate:
+                      $ref: "../parameter/rental.yaml#/components/parameters/returnDate"
                     itemId:
                       $ref: "../parameter/item.yaml#/components/parameters/id"
                     itemName:
@@ -73,15 +73,15 @@ paths:
               type: object
               required:
                 - itemId
-                - rental_date
-                - return_plan_date
+                - rentalDate
+                - returnPlanDate
               properties:
                 itemId:
                   $ref: "../parameter/item.yaml#/components/parameters/id"
-                rental_date:
-                  $ref: "../parameter/rental.yaml#/components/parameters/rental_date"
-                return_plan_date:
-                  $ref: "../parameter/rental.yaml#/components/parameters/return_plan_date"
+                rentalDate:
+                  $ref: "../parameter/rental.yaml#/components/parameters/rentalDate"
+                returnPlanDate:
+                  $ref: "../parameter/rental.yaml#/components/parameters/returnPlanDate"
       responses:
         "200":
           description: Success
@@ -127,19 +127,19 @@ paths:
                   required:
                     - id
                     - closed
-                    - rental_date
-                    - return_plan_date
-                    - return_date
+                    - rentalDate
+                    - returnPlanDate
+                    - returnDate
                     - item
                   properties:
                     closed:
                       $ref: "../parameter/rental.yaml#/components/parameters/closed"
-                    rental_date:
-                      $ref: "../parameter/rental.yaml#/components/parameters/rental_date"
-                    return_plan_date:
-                      $ref: "../parameter/rental.yaml#/components/parameters/return_plan_date"
-                    return_date:
-                      $ref: "../parameter/rental.yaml#/components/parameters/return_date"
+                    rentalDate:
+                      $ref: "../parameter/rental.yaml#/components/parameters/rentalDate"
+                    returnPlanDate:
+                      $ref: "../parameter/rental.yaml#/components/parameters/returnPlanDate"
+                    returnDate:
+                      $ref: "../parameter/rental.yaml#/components/parameters/returnDate"
                     item:
                       type: object
                       description: item information

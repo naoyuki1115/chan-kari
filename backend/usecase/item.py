@@ -2,22 +2,24 @@ import abc
 
 import model
 from database.transaction import TransactionInterface
+from psycopg2.errors import ForeignKeyViolation
 from schema import (
     ItemCreateRequest,
     ItemCreateResponse,
-    ItemListRequest,
+    ItemListParams,
     ItemResponse,
     ItemStatus,
 )
 from store import ItemStoreInterface, RentalStoreInterface
+from util.error_msg import NotFoundError
+from util.logging import get_logger
+
+logger = get_logger()
 
 
 class ItemUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def get_list(
-        self,
-        req: ItemListRequest,
-    ) -> list[ItemResponse]:
+    def get_list(self, params: ItemListParams) -> list[ItemResponse]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -36,13 +38,10 @@ class ItemUseCase(ItemUseCaseInterface):
         self.item_store: ItemStoreInterface = item
         self.rental_store: RentalStoreInterface = rental
 
-    def get_list(
-        self,
-        req: ItemListRequest,
-    ) -> list[ItemResponse]:
+    def get_list(self, params: ItemListParams) -> list[ItemResponse]:
         try:
             items: list[model.Item] = self.item_store.list_available(
-                req.limit, req.after, req.before
+                params.limit, params.after, params.before
             )
             valid_rentals: list[model.Rental] = self.rental_store.list_valid()
 
@@ -60,10 +59,11 @@ class ItemUseCase(ItemUseCaseInterface):
                 item_res_list.append(
                     ItemResponse.new(item.id, item.name, status, item.image_url)
                 )
-        except Exception:
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             raise
 
-        if bool(req.available):
+        if bool(params.available):
             return list(
                 filter(lambda i: i.status == ItemStatus.available, item_res_list)
             )
@@ -76,14 +76,18 @@ class ItemUseCase(ItemUseCaseInterface):
                 name=req.name,
                 owner_id=user_id,
                 available=not req.draft,
-                image_url=req.imageUrl,
+                image_url=req.image_url,
                 description=req.description,
                 author=req.author,
             )
             self.item_store.create(item)
             self.tx.commit()
-        except Exception:
+            return ItemCreateResponse.new(item.id)
+        except ForeignKeyViolation as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise NotFoundError
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             self.tx.rollback()
             raise
-        print(item)
-        return ItemCreateResponse.new(item.id)
