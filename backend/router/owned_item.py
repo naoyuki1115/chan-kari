@@ -8,9 +8,7 @@ from usecase import ItemUseCase, ItemUseCaseInterface
 from util.error_msg import NotFoundError
 from util.logging import get_logger
 
-router = APIRouter(
-    prefix="/items",
-)
+router = APIRouter()
 
 logger = get_logger()
 

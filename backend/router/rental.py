@@ -13,9 +13,7 @@ from util.error_msg import (
 )
 from util.logging import get_logger
 
-router = APIRouter(
-    prefix="/rentals",
-)
+router = APIRouter()
 
 logger = get_logger()
 
@@ -33,9 +31,9 @@ def list_rental():
         {
             "id": 1,
             "closed": False,
-            "rental_date": "2022-06-06",
-            "return_plan_date": "2022-06-06",
-            "return_date": "2022-06-06",
+            "rentalDate": "2022-06-06",
+            "returnPlanDate": "2022-06-06",
+            "returnDate": "2022-06-06",
             "itemId": 1,
             "itemName": "item name",
         }
@@ -47,8 +45,8 @@ def get_rental(item_id: int):
     return [
         {
             "itemId": item_id,
-            "rental_date": "2022-06-06",
-            "return_plan_date": "2022-06-06",
+            "rentalDate": "2022-06-06",
+            "returnPlanDate": "2022-06-06",
         }
     ]
 
