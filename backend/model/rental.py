@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Union
 
 from model import Base
@@ -19,9 +20,9 @@ class Rental(Base, Timestamp):
         ForeignKey("items.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    rented_date: Union[Date, Column] = Column(Date, nullable=False)
-    return_plan_date: Union[Date, Column] = Column(Date, nullable=False)
-    returned_date: Union[Date, Column] = Column(Date, nullable=True)
+    rented_date: Union[date, Column] = Column(Date, nullable=False)
+    return_plan_date: Union[date, Column] = Column(Date, nullable=False)
+    returned_date: Union[date, Column] = Column(Date, nullable=True)
 
     users = relationship("User", back_populates="rentals")
     items = relationship("Item", back_populates="rentals")

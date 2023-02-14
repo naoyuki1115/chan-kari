@@ -1,12 +1,6 @@
 from fastapi import APIRouter, status
-from router import owned_item, rental
 
-router = APIRouter(
-    prefix="/users",
-)
-
-router.include_router(owned_item.router)
-router.include_router(rental.router)
+router = APIRouter()
 
 
 @router.get("/profile")

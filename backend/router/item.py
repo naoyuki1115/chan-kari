@@ -7,9 +7,7 @@ from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterfa
 from usecase import ItemUseCase, ItemUseCaseInterface
 from util.logging import get_logger
 
-router = APIRouter(
-    prefix="/items",
-)
+router = APIRouter()
 
 logger = get_logger()
 
