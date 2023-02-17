@@ -3,7 +3,6 @@ from typing import Optional
 
 from fastapi import Path, Query
 from pydantic import BaseModel, Field
-from schema.pagination import PaginationQuery
 
 
 class RentRequest(BaseModel):
@@ -24,7 +23,7 @@ class ReturnParams(BaseModel):
     rental_id: int = Field(Path(alias="rentalId"))
 
 
-class RentalListParams(PaginationQuery):
+class RentalListParams(BaseModel):
     closed: Optional[str] = Field(Query(default=None))
 
 

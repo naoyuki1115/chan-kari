@@ -2,6 +2,7 @@ from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
 from schema import (
+    PaginationQuery,
     RentalListParams,
     RentalResponse,
     RentRequest,
@@ -34,12 +35,18 @@ def new_rental_usecase(db: Session = Depends(get_db)) -> RentalUseCaseInterface:
 @router.get("", response_model=list[RentalResponse])
 def list_rental(
     params: RentalListParams = Depends(),
+    pagination: PaginationQuery = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
 ):
+    if pagination.after is not None and pagination.before is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only either `before` or `after` can be specified",
+        )
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        return rental_usecase.get_my_list(params, user_id)
+        return rental_usecase.get_my_list(pagination, params, user_id)
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

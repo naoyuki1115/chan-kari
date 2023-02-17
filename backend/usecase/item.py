@@ -9,6 +9,7 @@ from schema import (
     ItemListParams,
     ItemResponse,
     ItemStatus,
+    PaginationQuery,
 )
 from store import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import NotFoundError
@@ -19,7 +20,9 @@ logger = get_logger()
 
 class ItemUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def get_list(self, params: ItemListParams) -> list[ItemResponse]:
+    def get_list(
+        self, pagination: PaginationQuery, params: ItemListParams
+    ) -> list[ItemResponse]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -38,11 +41,11 @@ class ItemUseCase(ItemUseCaseInterface):
         self.item_store: ItemStoreInterface = item
         self.rental_store: RentalStoreInterface = rental
 
-    def get_list(self, params: ItemListParams) -> list[ItemResponse]:
+    def get_list(
+        self, pagination: PaginationQuery, params: ItemListParams
+    ) -> list[ItemResponse]:
         try:
-            items: list[model.Item] = self.item_store.list_available(
-                params.limit, params.after, params.before
-            )
+            items: list[model.Item] = self.item_store.list_available(pagination)
             valid_rentals: list[model.Rental] = self.rental_store.list_valid()
 
             item_res_list: list[ItemResponse] = []

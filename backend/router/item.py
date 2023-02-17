@@ -1,7 +1,7 @@
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
-from schema import ItemListParams, ItemResponse
+from schema import ItemListParams, ItemResponse, PaginationQuery
 from sqlalchemy.orm import Session
 from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
 from usecase import ItemUseCase, ItemUseCaseInterface
@@ -22,15 +22,16 @@ def new_item_usecase(db: Session = Depends(get_db)) -> ItemUseCaseInterface:
 @router.get("", response_model=list[ItemResponse])
 def list_item(
     params: ItemListParams = Depends(),
+    pagination: PaginationQuery = Depends(),
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
 ) -> list[ItemResponse]:
-    if params.after is not None and params.before is not None:
+    if pagination.after is not None and pagination.before is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only either `before` or `after` can be specified",
         )
     try:
-        items = item_usecase.get_list(params)
+        items = item_usecase.get_list(pagination, params)
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
