@@ -17,6 +17,12 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def list_by_user_id(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[model.Item]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
