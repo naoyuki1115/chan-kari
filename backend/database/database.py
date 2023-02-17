@@ -11,7 +11,6 @@ db_url = "postgres://%s:%s@%s:%s/%s" % (
     os.environ.get("POSTGRES_PORT"),
     os.environ.get("POSTGRES_DB"),
 )
-print(db_url)
 
 engine = create_engine(db_url, echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -20,6 +19,7 @@ Base = declarative_base()
 
 
 def create_table():
+    print(db_url)
     Base.metadata.create_all(engine)
 
 
