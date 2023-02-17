@@ -37,7 +37,7 @@ def list_rental(
     params: RentalListParams = Depends(),
     pagination: PaginationQuery = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
-):
+) -> list[RentalResponse]:
     if pagination.after is not None and pagination.before is not None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -105,7 +105,7 @@ def rent_item(
 def return_rental(
     params: ReturnParams = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
-):
+) -> None:
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 3

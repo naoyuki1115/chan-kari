@@ -26,6 +26,12 @@ class ItemUseCaseInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_my_list(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[ItemResponse]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
         raise NotImplementedError
 
@@ -70,6 +76,11 @@ class ItemUseCase(ItemUseCaseInterface):
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
+
+    def get_my_list(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[ItemResponse]:
+        raise NotImplementedError
 
     def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
         try:
