@@ -23,7 +23,8 @@ WORKDIR /app
 # COPY --from=dev /usr/local/bin/uvicorn /usr/local/bin/uvicorn 
 
 RUN apt-get update && apt-get install -y \
-    libpq-dev && \
+    libpq-dev \
+    postgresql && \
     apt-get clean
 
 COPY requirements-prod.txt ./
