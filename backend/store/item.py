@@ -55,6 +55,16 @@ class ItemStore(ItemStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def list_by_user_id(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[model.Item]:
+        try:
+            q = self.db.query(model.Item).filter(model.Item.owner_id == user_id)
+            return pagination_query(model.Item, q, pagination, model.Item.id)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
