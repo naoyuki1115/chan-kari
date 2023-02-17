@@ -2,8 +2,10 @@ import abc
 from typing import Optional
 
 import model
+from schema import PaginationQuery
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
+from store.util import pagination_query
 from util.logging import get_logger
 
 logger = get_logger()
@@ -15,7 +17,16 @@ class RentalStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def list(self) -> None:
+    def list_by_user_id(
+        self,
+        user_id: int,
+        closed: bool,
+        pagination: PaginationQuery,
+    ) -> list[model.Rental]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def list(self) -> list[model.Rental]:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -51,7 +62,22 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def list(self) -> None:
+    def list_by_user_id(
+        self,
+        user_id: int,
+        closed: bool,
+        pagination: PaginationQuery,
+    ) -> list[model.Rental]:
+        try:
+            q = self.db.query(model.Rental).filter(model.Rental.user_id == user_id)
+            if closed is False:
+                q = q.filter(model.Rental.returned_date == None)  # NOQA
+            return pagination_query(model.Rental, q, pagination, model.Rental.id)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def list(self) -> list[model.Rental]:
         raise NotImplementedError()
 
     def detail(self, id: int) -> Optional[model.Rental]:
