@@ -5,7 +5,13 @@ from zoneinfo import ZoneInfo
 import model
 from database.transaction import TransactionInterface
 from psycopg2.errors import ForeignKeyViolation, UniqueViolation
-from schema import RentRequest, RentResponse, ReturnParams
+from schema import (
+    RentalListParams,
+    RentalResponse,
+    RentRequest,
+    RentResponse,
+    ReturnParams,
+)
 from store import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import (
     NotFoundError,
@@ -23,7 +29,14 @@ class RentalUseCaseInterface(metaclass=abc.ABCMeta):
     def rent_item(self, req: RentRequest, user_id: int) -> RentResponse:
         raise NotImplementedError
 
+    @abc.abstractmethod
     def return_item(self, params: ReturnParams, user_id: int) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_my_list(
+        self, params: RentalListParams, user_id: int
+    ) -> list[RentalResponse]:
         raise NotImplementedError
 
 
@@ -102,3 +115,8 @@ class RentalUseCase(RentalUseCaseInterface):
             logger.error(f"({__name__}): {err}")
             self.tx.rollback()
             raise
+
+    def get_my_list(
+        self, params: RentalListParams, user_id: int
+    ) -> list[RentalResponse]:
+        raise NotImplementedError
