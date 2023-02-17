@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 
-db_url = "postgresql://%s:%s@%s:%s/%s" % (
+db_url = "postgres://%s:%s@%s:%s/%s" % (
     os.environ.get("POSTGRES_USER"),
     os.environ.get("POSTGRES_PASSWORD"),
     os.environ.get("POSTGRES_HOST"),
