@@ -20,7 +20,7 @@ FROM python:3.11-slim-bullseye AS prod
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
+    libpq-dev && \
     apt-get clean
 
 COPY --from=dev /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
