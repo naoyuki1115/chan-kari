@@ -5,7 +5,14 @@ from zoneinfo import ZoneInfo
 import model
 from database.transaction import TransactionInterface
 from psycopg2.errors import ForeignKeyViolation, UniqueViolation
-from schema import RentRequest, RentResponse, ReturnParams
+from schema import (
+    PaginationQuery,
+    RentalListParams,
+    RentalResponse,
+    RentRequest,
+    RentResponse,
+    ReturnParams,
+)
 from store import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import (
     NotFoundError,
@@ -23,7 +30,14 @@ class RentalUseCaseInterface(metaclass=abc.ABCMeta):
     def rent_item(self, req: RentRequest, user_id: int) -> RentResponse:
         raise NotImplementedError
 
+    @abc.abstractmethod
     def return_item(self, params: ReturnParams, user_id: int) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_my_list(
+        self, pagination: PaginationQuery, params: RentalListParams, user_id: int
+    ) -> list[RentalResponse]:
         raise NotImplementedError
 
 
@@ -72,7 +86,7 @@ class RentalUseCase(RentalUseCaseInterface):
 
     def return_item(self, params: ReturnParams, user_id: int) -> None:
         try:
-            existing_rental = self.rental_store.detail(params.rental_id)
+            existing_rental: model.Rental = self.rental_store.detail(params.rental_id)
             if existing_rental is None:
                 raise NotFoundError
             if existing_rental.user_id != user_id:
@@ -101,4 +115,29 @@ class RentalUseCase(RentalUseCaseInterface):
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             self.tx.rollback()
+            raise
+
+    def get_my_list(
+        self, pagination: PaginationQuery, params: RentalListParams, user_id: int
+    ) -> list[RentalResponse]:
+        try:
+            rentals: list[model.Rental] = self.rental_store.list_by_user_id(
+                user_id, bool(params.closed), pagination
+            )
+            rental_res_list: list[RentalResponse] = []
+            for rental in rentals:
+                rental_res_list.append(
+                    RentalResponse.new(
+                        id=rental.id,
+                        closed=False if rental.returned_date is None else True,
+                        rental_date=rental.rented_date,
+                        return_plan_date=rental.return_plan_date,
+                        return_date=rental.returned_date,
+                        item_id=rental.item_id,
+                        item_name=rental.items.name,
+                    )
+                )
+            return rental_res_list
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
             raise

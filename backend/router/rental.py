@@ -1,7 +1,14 @@
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
-from schema import RentRequest, RentResponse, ReturnParams
+from schema import (
+    PaginationQuery,
+    RentalListParams,
+    RentalResponse,
+    RentRequest,
+    RentResponse,
+    ReturnParams,
+)
 from sqlalchemy.orm import Session
 from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
 from usecase import RentalUseCase, RentalUseCaseInterface
@@ -25,19 +32,26 @@ def new_rental_usecase(db: Session = Depends(get_db)) -> RentalUseCaseInterface:
     return RentalUseCase(tx, item_store, renal_store)
 
 
-@router.get("")
-def list_rental():
-    return [
-        {
-            "id": 1,
-            "closed": False,
-            "rentalDate": "2022-06-06",
-            "returnPlanDate": "2022-06-06",
-            "returnDate": "2022-06-06",
-            "itemId": 1,
-            "itemName": "item name",
-        }
-    ]
+@router.get("", response_model=list[RentalResponse])
+def list_rental(
+    params: RentalListParams = Depends(),
+    pagination: PaginationQuery = Depends(),
+    rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
+):
+    if pagination.after is not None and pagination.before is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only either `before` or `after` can be specified",
+        )
+    try:
+        # TODO: headerのトークンからユーザーID取得
+        user_id = 2
+        return rental_usecase.get_my_list(pagination, params, user_id)
+    except Exception as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @router.get("/{item_id}")
@@ -59,7 +73,7 @@ def rent_item(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        rental = rental_usecase.rent_item(req, user_id)
+        return rental_usecase.rent_item(req, user_id)
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
@@ -85,7 +99,6 @@ def rent_item(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return rental
 
 
 @router.put("/{rentalId}/return", status_code=status.HTTP_204_NO_CONTENT)

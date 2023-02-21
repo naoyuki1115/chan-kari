@@ -3,7 +3,6 @@ from typing import Optional
 
 from fastapi import Query
 from pydantic import BaseModel, Field
-from schema.pagination import PaginationQuery
 
 
 class ItemStatus(str, Enum):
@@ -12,7 +11,7 @@ class ItemStatus(str, Enum):
     rented = "rented"
 
 
-class ItemListParams(PaginationQuery):
+class ItemListParams(BaseModel):
     available: Optional[str] = Field(Query(default=None))
 
 
