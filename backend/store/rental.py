@@ -1,7 +1,7 @@
-import abc
 from typing import Optional
 
 import model
+from repository import RentalStoreInterface
 from schema import PaginationQuery
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
@@ -9,41 +9,6 @@ from store.util import pagination_query
 from util.logging import get_logger
 
 logger = get_logger()
-
-
-class RentalStoreInterface(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def list_valid(self) -> list[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def list_by_user_id(
-        self,
-        user_id: int,
-        closed: bool,
-        pagination: PaginationQuery,
-    ) -> list[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def list(self) -> list[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def detail(self, id: int) -> Optional[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def create(self, rental: model.Rental) -> None:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def update(self, rental: model.Rental) -> None:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def delete(self) -> None:
-        raise NotImplementedError()
 
 
 class RentalStore(RentalStoreInterface):

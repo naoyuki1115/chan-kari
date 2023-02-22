@@ -1,4 +1,4 @@
-from store.item import ItemStore, ItemStoreInterface
-from store.rental import RentalStore, RentalStoreInterface
+from store.item import ItemStore
+from store.rental import RentalStore
 
-__all__ = ["ItemStoreInterface", "ItemStore", "RentalStore", "RentalStoreInterface"]
+__all__ = ["ItemStore", "RentalStore"]

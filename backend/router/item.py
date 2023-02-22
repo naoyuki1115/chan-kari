@@ -1,9 +1,10 @@
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
+from repository import ItemStoreInterface, RentalStoreInterface
 from schema import ItemListParams, ItemResponse, PaginationQuery
 from sqlalchemy.orm import Session
-from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
+from store import ItemStore, RentalStore
 from usecase import ItemUseCase, ItemUseCaseInterface
 from util.logging import get_logger
 

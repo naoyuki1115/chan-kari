@@ -10,7 +10,8 @@ from schema import (
     ReturnParams,
 )
 from sqlalchemy.orm import Session
-from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
+from store import ItemStore, RentalStore
+from repository import ItemStoreInterface, RentalStoreInterface
 from usecase import RentalUseCase, RentalUseCaseInterface
 from util.error_msg import (
     NotFoundError,

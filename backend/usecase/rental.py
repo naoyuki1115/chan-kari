@@ -13,7 +13,7 @@ from schema import (
     RentResponse,
     ReturnParams,
 )
-from store import ItemStoreInterface, RentalStoreInterface
+from repository import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import (
     NotFoundError,
     OperationIsForbiddenError,

@@ -3,7 +3,8 @@ from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
 from schema import ItemCreateRequest, ItemCreateResponse, ItemResponse, PaginationQuery
 from sqlalchemy.orm import Session
-from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
+from store import ItemStore, RentalStore
+from repository import ItemStoreInterface, RentalStoreInterface
 from usecase import ItemUseCase, ItemUseCaseInterface
 from util.error_msg import NotFoundError
 from util.logging import get_logger

@@ -11,7 +11,7 @@ from schema import (
     ItemStatus,
     PaginationQuery,
 )
-from store import ItemStoreInterface, RentalStoreInterface
+from repository import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import NotFoundError
 from util.logging import get_logger
 
