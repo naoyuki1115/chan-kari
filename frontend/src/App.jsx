@@ -12,52 +12,19 @@ import MyItemList from "./component/MyItemList";
 import ItemRegister from "./component/ItemRegister";
 import ItemDetail from "./component/ItemDetail";
 
-const homeUrl = process.env.PUBLIC_URL;
-
-export const App = () => {
-    return (
-        <div className="App">
-            <NavTop />
-
-            <Routes>
-                <Route path={homeUrl} element={<Home />} />
-            </Routes>
-            <Routes>
-                <Route path={homeUrl + "/mypage"} element={<MyPage />} />
-            </Routes>
-            <Routes>
-                <Route path={homeUrl + "/RentList"} element={<RentList />} />
-            </Routes>
-            <Routes>
-                <Route
-                    path={homeUrl + "/BorrowList"}
-                    element={<BorrowList />}
-                />
-            </Routes>
-            <Routes>
-                <Route
-                    path={homeUrl + "/MyItemList"}
-                    element={<MyItemList />}
-                />
-            </Routes>
-            <Routes>
-                <Route
-                    path={homeUrl + "/ItemRegister"}
-                    element={<ItemRegister />}
-                />
-            </Routes>
-
-            <Routes>
-                <Route
-                    path={homeUrl + "/ItemDetail/:id"}
-                    element={<ItemDetail />}
-                />
-            </Routes>
-
-            <NavBottom />
-            <div className="App-Spacer"></div>
-        </div>
-    );
-};
-
-//ReactDOM.render(<App />, document.getElementById("root"));
+export const App = () => (
+    <div className="App">
+        <NavTop />
+        <Routes>
+            <Route path={"/"} element={<Home />} />
+            <Route path={"/mypage"} element={<MyPage />} />
+            <Route path={"/RentList"} element={<RentList />} />
+            <Route path={"/BorrowList"} element={<BorrowList />} />
+            <Route path={"/MyItemList"} element={<MyItemList />} />
+            <Route path={"/ItemRegister"} element={<ItemRegister />} />
+            <Route path={"/ItemDetail/:id"} element={<ItemDetail />} />
+        </Routes>
+        <NavBottom />
+        <div className="App-Spacer"></div>
+    </div>
+);
