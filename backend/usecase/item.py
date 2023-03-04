@@ -26,6 +26,12 @@ class ItemUseCaseInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
+    def get_my_list(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[ItemResponse]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
         raise NotImplementedError
 
@@ -65,6 +71,34 @@ class ItemUseCase(ItemUseCaseInterface):
             if bool(params.available):
                 return list(
                     filter(lambda i: i.status == ItemStatus.available, item_res_list)
+                )
+            return item_res_list
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def get_my_list(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[ItemResponse]:
+        try:
+            items: list[model.Item] = self.item_store.list_by_user_id(
+                pagination, user_id
+            )
+            valid_rentals: list[model.Rental] = self.rental_store.list_valid()
+
+            item_res_list: list[ItemResponse] = []
+            for item in items:
+                if not item.available:
+                    status: ItemStatus = ItemStatus.unavailable
+                elif (
+                    len(list(filter(lambda r: r.item_id == item.id, valid_rentals)))
+                    != 0
+                ):
+                    status: ItemStatus = ItemStatus.rented
+                else:
+                    status: ItemStatus = ItemStatus.available
+                item_res_list.append(
+                    ItemResponse.new(item.id, item.name, status, item.image_url)
                 )
             return item_res_list
         except Exception as err:

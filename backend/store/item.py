@@ -17,6 +17,12 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def list_by_user_id(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[model.Item]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def list(self) -> list[model.Item]:
         raise NotImplementedError()
 
@@ -44,6 +50,16 @@ class ItemStore(ItemStoreInterface):
     def list_available(self, pagination: PaginationQuery) -> list[model.Item]:
         try:
             q = self.db.query(model.Item).filter(model.Item.available == True)  # NOQA
+            return pagination_query(model.Item, q, pagination, model.Item.id)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def list_by_user_id(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[model.Item]:
+        try:
+            q = self.db.query(model.Item).filter(model.Item.owner_id == user_id)
             return pagination_query(model.Item, q, pagination, model.Item.id)
         except Exception as err:
             logger.error(f"({__name__}): {err}")

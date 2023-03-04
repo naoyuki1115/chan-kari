@@ -1,7 +1,7 @@
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
-from schema import ItemCreateRequest, ItemCreateResponse
+from schema import ItemCreateRequest, ItemCreateResponse, ItemResponse, PaginationQuery
 from sqlalchemy.orm import Session
 from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
 from usecase import ItemUseCase, ItemUseCaseInterface
@@ -40,16 +40,25 @@ def create_item(
     return item
 
 
-@router.get("")
-def list_owned():
-    return [
-        {
-            "id": 1,
-            "name": "item name",
-            "status": "available",
-            "imageUrl": "http://example.com/test.png",
-        }
-    ]
+@router.get("", response_model=list[ItemResponse])
+def list_owned_items(
+    pagination: PaginationQuery = Depends(),
+    item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
+) -> list[ItemResponse]:
+    if pagination.after is not None and pagination.before is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only either `before` or `after` can be specified",
+        )
+    try:
+        # TODO: headerのトークンからユーザーID取得
+        user_id = 2
+        return item_usecase.get_my_list(pagination, user_id)
+    except Exception as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
 
 @router.get("/{item_id}")
