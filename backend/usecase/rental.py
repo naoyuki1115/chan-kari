@@ -3,6 +3,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import model
+import domain_model
 from database.transaction import TransactionInterface
 from psycopg2.errors import ForeignKeyViolation, UniqueViolation
 from schema import (
@@ -84,6 +85,15 @@ class RentalUseCase(RentalUseCaseInterface):
             self.tx.rollback()
             raise
 
+    def rent_item2(self, req: RentRequest, user_id: int) -> domain_model.Rental:
+        item: domain_model.Item = self.item_store.detail2(req.item_id)
+        rental = domain_model.Rental(
+            user_id, item, req.rental_date, req.return_plan_date
+        )
+        self.rental_store.create2(rental)
+        self.tx.commit()
+        return rental
+
     def return_item(self, params: ReturnParams, user_id: int) -> None:
         try:
             existing_rental: model.Rental = self.rental_store.detail(params.rental_id)
@@ -103,6 +113,25 @@ class RentalUseCase(RentalUseCaseInterface):
                 returned_date=datetime.now(ZoneInfo("Asia/Tokyo")).date(),
             )
             self.rental_store.update(rental)
+            self.tx.commit()
+        except UniqueViolation as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise ResourceAlreadyExistsError
+        except ForeignKeyViolation as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise NotFoundError
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise
+
+    def return_item2(self, params: ReturnParams, user_id: int) -> None:
+        try:
+            rental: domain_model.Rental = self.rental_store.detail2(params.rental_id)
+            rental.return_item(user_id)
+            self.rental_store.update2(rental)
             self.tx.commit()
         except UniqueViolation as err:
             logger.error(f"({__name__}): {err}")
@@ -138,6 +167,18 @@ class RentalUseCase(RentalUseCaseInterface):
                     )
                 )
             return rental_res_list
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def get_my_list2(
+        self, pagination: PaginationQuery, params: RentalListParams, user_id: int
+    ) -> list[domain_model.Rental]:
+        try:
+
+            return self.rental_store.list_by_user_id2(
+                user_id, bool(params.closed), pagination
+            )
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise

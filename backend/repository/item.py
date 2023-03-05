@@ -1,5 +1,6 @@
 import abc
 from typing import Optional
+import domain_model
 
 import model
 from schema import PaginationQuery
@@ -22,6 +23,10 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def detail(self, id: int) -> Optional[model.Item]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def detail2(self, id: int) -> domain_model.Item:
         raise NotImplementedError()
 
     @abc.abstractmethod
