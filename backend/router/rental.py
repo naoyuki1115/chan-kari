@@ -1,6 +1,7 @@
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
+from repository import ItemStoreInterface, RentalStoreInterface
 from schema import (
     PaginationQuery,
     RentalListParams,
@@ -11,7 +12,6 @@ from schema import (
 )
 from sqlalchemy.orm import Session
 from store import ItemStore, RentalStore
-from repository import ItemStoreInterface, RentalStoreInterface
 from usecase import RentalUseCase, RentalUseCaseInterface
 from util.error_msg import (
     NotFoundError,

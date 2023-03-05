@@ -1,12 +1,12 @@
 from typing import Optional
 
 import model
+from repository import ItemStoreInterface
 from schema import PaginationQuery
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 from store.util import pagination_query
 from util.logging import get_logger
-from repository import ItemStoreInterface
 
 logger = get_logger()
 

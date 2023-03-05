@@ -1,17 +1,16 @@
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
 from typing import Optional
+from zoneinfo import ZoneInfo
+
+from domain_model import Item
 from domain_model.item import ItemStatus
 from util.error_msg import (
     NotFoundError,
     OperationIsForbiddenError,
-    ResourceUnavailableError,
     ResourceAlreadyExistsError,
+    ResourceUnavailableError,
 )
-from datetime import datetime
-from zoneinfo import ZoneInfo
-
-from domain_model import Item
 
 
 class RentalStatus(str, Enum):
