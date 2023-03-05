@@ -2,10 +2,11 @@ import abc
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-import model
 import domain_model
+import model
 from database.transaction import TransactionInterface
 from psycopg2.errors import ForeignKeyViolation, UniqueViolation
+from repository import ItemStoreInterface, RentalStoreInterface
 from schema import (
     PaginationQuery,
     RentalListParams,
@@ -14,7 +15,6 @@ from schema import (
     RentResponse,
     ReturnParams,
 )
-from repository import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import (
     NotFoundError,
     OperationIsForbiddenError,

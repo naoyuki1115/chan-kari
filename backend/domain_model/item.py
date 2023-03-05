@@ -41,17 +41,24 @@ class Item:
 
     def __init__(
         self,
-        id: int,
         name: str,
         owner_id: int,
         image_url: Optional[str],
         description: Optional[str],
         author: Optional[str],
     ):
-        self.__id: int = id
-        self.__name: str = name
-        self.__owner_id: int = owner_id
-        self.__status: ItemStatus = ItemStatus.private
-        self.__image_url: Optional[str] = image_url
-        self.__description: Optional[str] = description
-        self.__author: Optional[str] = author
+        self.__name = name
+        self.__owner_id = owner_id
+        self.__status = ItemStatus.private
+        self.__description = description
+        self.__image_url = image_url
+        self.__author = author
+
+    def set_public_status(self):
+        self.__status = ItemStatus.public
+
+    def set_private_status(self):
+        self.__status = ItemStatus.private
+
+    def set_rented_status(self):
+        self.__status = ItemStatus.rented

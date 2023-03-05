@@ -1,8 +1,10 @@
 import abc
 
+import domain_model
 import model
 from database.transaction import TransactionInterface
 from psycopg2.errors import ForeignKeyViolation
+from repository import ItemStoreInterface, RentalStoreInterface
 from schema import (
     ItemCreateRequest,
     ItemCreateResponse,
@@ -11,7 +13,6 @@ from schema import (
     ItemStatus,
     PaginationQuery,
 )
-from repository import ItemStoreInterface, RentalStoreInterface
 from util.error_msg import NotFoundError
 from util.logging import get_logger
 
@@ -77,6 +78,15 @@ class ItemUseCase(ItemUseCaseInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def get_list2(
+        self, pagination: PaginationQuery, params: ItemListParams
+    ) -> list[domain_model.Item]:
+        try:
+            return self.item_store.list_public(pagination, bool(params.available))
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def get_my_list(
         self, pagination: PaginationQuery, user_id: int
     ) -> list[ItemResponse]:
@@ -105,6 +115,15 @@ class ItemUseCase(ItemUseCaseInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def get_my_list2(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[domain_model.Item]:
+        try:
+            return self.item_store.list_by_user_id2(pagination, user_id)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
         try:
             item = model.Item(
@@ -118,6 +137,24 @@ class ItemUseCase(ItemUseCaseInterface):
             self.item_store.create(item)
             self.tx.commit()
             return ItemCreateResponse.new(item.id)
+        except ForeignKeyViolation as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise NotFoundError
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise
+
+    def create_item2(self, req: ItemCreateRequest, user_id: int) -> domain_model.Item:
+        try:
+            item = domain_model.Item(
+                req.name, user_id, req.image_url, req.description, req.author
+            )
+            item.set_public_status()
+            self.item_store.create2(item)
+            self.tx.commit()
+            return item
         except ForeignKeyViolation as err:
             logger.error(f"({__name__}): {err}")
             self.tx.rollback()
