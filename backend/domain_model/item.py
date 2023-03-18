@@ -50,8 +50,8 @@ class Item:
         self.__name = name
         self.__owner_id = owner_id
         self.__status = ItemStatus.private
-        self.__description = description
         self.__image_url = image_url
+        self.__description = description
         self.__author = author
 
     def set_public_status(self):

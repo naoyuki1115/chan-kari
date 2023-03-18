@@ -1,7 +1,7 @@
 import abc
 from typing import Optional
-import domain_model
 
+import domain_model
 import model
 from schema import PaginationQuery
 

@@ -1,7 +1,6 @@
 from datetime import date
-from typing import Union
 
-from model import Base
+from model import Base, Item, User
 from model.timestamp import Timestamp
 from sqlalchemy import Column, Date, ForeignKey, Index, Integer
 from sqlalchemy.orm import relationship
@@ -9,23 +8,23 @@ from sqlalchemy.orm import relationship
 
 class Rental(Base, Timestamp):
     __tablename__ = "rentals"
-    id: Union[int, Column] = Column(Integer, primary_key=True, autoincrement=True)
-    user_id: Union[int, Column] = Column(
+    id: int = Column(Integer, primary_key=True, autoincrement=True)  # type: ignore
+    user_id: int = Column(  # type: ignore
         Integer,
         ForeignKey("users.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    item_id: Union[int, Column] = Column(
+    item_id: int = Column(  # type: ignore
         Integer,
         ForeignKey("items.id", onupdate="CASCADE", ondelete="RESTRICT"),
         nullable=False,
     )
-    rented_date: Union[date, Column] = Column(Date, nullable=False)
-    return_plan_date: Union[date, Column] = Column(Date, nullable=False)
-    returned_date: Union[date, Column] = Column(Date, nullable=True)
+    rented_date: date = Column(Date, nullable=False)  # type: ignore
+    return_plan_date: date = Column(Date, nullable=False)  # type: ignore
+    returned_date: date = Column(Date, nullable=True)  # type: ignore
 
-    users = relationship("User", back_populates="rentals")
-    items = relationship("Item", back_populates="rentals")
+    user: User = relationship("User", back_populates="rentals")
+    item: Item = relationship("Item", back_populates="rentals")
 
     __table_args__ = (
         Index(
