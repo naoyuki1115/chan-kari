@@ -1,14 +1,14 @@
-from typing import Any, TypeVar
+from typing import Any, Type, TypeVar
 
 from schema import PaginationQuery
 from sqlalchemy import desc
 from sqlalchemy.orm import Query
 
-T = TypeVar("T")
+T = TypeVar("T", bound=tuple)
 
 
 def pagination_query(
-    model: T,
+    t: Type[T],
     q: Query,
     pagination: PaginationQuery,
     id: Any,

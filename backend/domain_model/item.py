@@ -62,3 +62,19 @@ class Item:
 
     def set_rented_status(self):
         self.__status = ItemStatus.rented
+
+    @classmethod
+    def to_domain_model(
+        cls,
+        id: int,
+        name: str,
+        owner_id: int,
+        status: ItemStatus,
+        image_url: Optional[str],
+        description: Optional[str],
+        author: Optional[str],
+    ):
+        model = cls(name, owner_id, image_url, description, author)
+        model.__id = id
+        model.__status = status
+        return model
