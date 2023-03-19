@@ -1,5 +1,6 @@
 import abc
 from datetime import datetime
+from typing import Optional
 from zoneinfo import ZoneInfo
 
 import domain_model
@@ -129,7 +130,11 @@ class RentalUseCase(RentalUseCaseInterface):
 
     def return_item2(self, params: ReturnParams, user_id: int) -> None:
         try:
-            rental: domain_model.Rental = self.rental_store.detail2(params.rental_id)
+            rental: Optional[domain_model.Rental] = self.rental_store.detail2(
+                params.rental_id
+            )
+            if rental is None:
+                raise NotFoundError
             rental.return_item(user_id)
             self.rental_store.update2(rental)
             self.tx.commit()

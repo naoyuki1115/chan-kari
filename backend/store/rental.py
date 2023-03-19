@@ -99,5 +99,24 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def update2(self, domain_rental: domain_model.Rental) -> None:
+        try:
+            rental: model.Rental = (
+                self.db.query(model.Rental)
+                .filter(model.Rental.id == domain_rental.get_id())
+                .one()
+            )
+            rental.user_id = domain_rental.get_user_id()
+            rental.item_id = domain_rental.get_item().get_id()
+            rental.rented_date = domain_rental.get_rented_date()
+            rental.return_plan_date = domain_rental.get_return_plan_date()
+            rental.returned_date = domain_rental.get_returned_date()
+        except NoResultFound as err:
+            logger.error(f"({__name__}): {err}")
+            return None
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def delete(self) -> None:
         raise NotImplementedError()
