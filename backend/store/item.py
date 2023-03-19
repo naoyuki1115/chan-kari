@@ -47,27 +47,11 @@ class ItemStore(ItemStoreInterface):
             )
 
             items: list[domain_model.Item] = []
-            for item, rental in items_with_rental:
-                status: domain_model.ItemStatus
-                if rental is not None and rental.rented_date is None:
-                    status = domain_model.ItemStatus.rented
-                elif item.available is False:
-                    status = domain_model.ItemStatus.private
+            for item_with_rental in items_with_rental:
+                item = domain_model.Item.to_domain_model(item_with_rental)
+                if item.get_status == domain_model.ItemStatus.private:
                     raise
-                else:
-                    status = domain_model.ItemStatus.public
-
-                items.append(
-                    domain_model.Item.to_domain_model(
-                        id=item.id,
-                        name=item.name,
-                        owner_id=item.owner_id,
-                        status=status,
-                        image_url=item.image_url,
-                        description=item.description,
-                        author=item.author,
-                    )
-                )
+                items.append(item)
             return items
         except Exception as err:
             logger.error(f"({__name__}): {err}")
