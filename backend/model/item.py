@@ -1,4 +1,5 @@
 import domain_model
+from typing import Optional
 from model import Base, Rental, User
 from model.timestamp import Timestamp
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
@@ -17,25 +18,25 @@ class Item(Base, Timestamp):
         nullable=False,
     )
     available: bool = Column(Boolean, nullable=False)  # type: ignore
-    image_url: str = Column(String, nullable=True)  # type: ignore
-    description: str = Column(String, nullable=True)  # type: ignore
-    author: str = Column(String, nullable=True)  # type: ignore
+    image_url: Optional[str] = Column(String, nullable=True)  # type: ignore
+    description: Optional[str] = Column(String, nullable=True)  # type: ignore
+    author: Optional[str] = Column(String, nullable=True)  # type: ignore
 
     user: User = relationship("User", back_populates="items")
     rentals: list[Rental] = relationship("Rental", back_populates="item")
 
     @classmethod
     def from_domain_model(cls, item: domain_model.Item):
-        if item.get_status == ItemStatus.private:
+        if item.get_status() == ItemStatus.private:
             available = False
         else:
             available = True
         return cls(
-            id=item.get_id,
-            name=item.get_name,
-            owner_id=item.get_owner_id,
+            id=item.get_id(),
+            name=item.get_name(),
+            owner_id=item.get_owner_id(),
             available=available,
-            imageUrl=item.get_image_url,
-            description=item.get_description,
-            author=item.get_author,
+            imageUrl=item.get_image_url(),
+            description=item.get_description(),
+            author=item.get_author(),
         )

@@ -1,5 +1,5 @@
 from datetime import date
-
+from typing import Optional
 import domain_model
 from model import Base, Item, User
 from model.timestamp import Timestamp
@@ -22,7 +22,7 @@ class Rental(Base, Timestamp):
     )
     rented_date: date = Column(Date, nullable=False)  # type: ignore
     return_plan_date: date = Column(Date, nullable=False)  # type: ignore
-    returned_date: date = Column(Date, nullable=True)  # type: ignore
+    returned_date: Optional[date] = Column(Date, nullable=True)  # type: ignore
 
     user: User = relationship("User", back_populates="rentals")
     item: Item = relationship("Item", back_populates="rentals")
@@ -39,10 +39,10 @@ class Rental(Base, Timestamp):
     @classmethod
     def from_domain_model(cls, rental: domain_model.Rental):
         return cls(
-            id=rental.get_id,
-            user_id=rental.get_user_id,
-            item_id=rental.get_item().get_id,
-            rented_date=rental.get_rented_date,
-            return_plan_date=rental.get_return_plan_date,
-            returned_date=rental.get_returned_date,
+            id=rental.get_id(),
+            user_id=rental.get_user_id(),
+            item_id=rental.get_item().get_id(),
+            rented_date=rental.get_rented_date(),
+            return_plan_date=rental.get_return_plan_date(),
+            returned_date=rental.get_returned_date(),
         )
