@@ -28,6 +28,19 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def list_valid2(self) -> list[domain_model.Rental]:
+        try:
+            rentals: list[model.Rental] = (
+                self.db.query(model.Rental)
+                .filter(model.Rental.returned_date == None)  # NOQA
+                .order_by(model.Rental.id)
+                .all()
+            )
+            return self.__convert_to_domain_model_list(rentals)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def list_by_user_id(
         self,
         user_id: int,
@@ -58,17 +71,10 @@ class RentalStore(RentalStoreInterface):
             rentals: list[model.Rental] = pagination_query(
                 model.Rental, query, pagination, model.Rental.id
             )
-
-            domain_rentals: list[domain_model.Rental] = []
-            for rental in rentals:
-                domain_rentals.append(domain_model.Rental.to_domain_model(rental))
-            return domain_rentals
+            return self.__convert_to_domain_model_list(rentals)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
-
-    def list(self) -> list[model.Rental]:
-        raise NotImplementedError()
 
     def detail(self, id: int) -> Optional[model.Rental]:
         try:
@@ -144,3 +150,12 @@ class RentalStore(RentalStoreInterface):
 
     def delete(self) -> None:
         raise NotImplementedError()
+
+    def __convert_to_domain_model_list(
+        self,
+        rentals: list[model.Rental],
+    ) -> list[domain_model.Rental]:
+        domain_rentals: list[domain_model.Rental] = []
+        for rental in rentals:
+            domain_rentals.append(domain_model.Rental.to_domain_model(rental))
+        return domain_rentals

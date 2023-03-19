@@ -30,10 +30,6 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def list(self) -> list[model.Item]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
     def detail(self, id: int) -> Optional[model.Item]:
         raise NotImplementedError()
 

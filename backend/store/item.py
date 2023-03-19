@@ -42,17 +42,10 @@ class ItemStore(ItemStoreInterface):
                         model.Rental.returned_date != None,  # NOQA
                     )
                 )
-            items_with_rental: list[model.Item] = pagination_query(
+            items: list[model.Item] = pagination_query(
                 model.Item, query, pagination, model.Item.id
             )
-
-            domain_items: list[domain_model.Item] = []
-            for item_with_rental in items_with_rental:
-                domain_item = domain_model.Item.to_domain_model(item_with_rental)
-                if domain_item.get_status == domain_model.ItemStatus.private:
-                    raise
-                domain_items.append(domain_item)
-            return domain_items
+            return self.__convert_to_domain_model_list(items)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
@@ -75,16 +68,10 @@ class ItemStore(ItemStoreInterface):
             items: list[model.Item] = pagination_query(
                 model.Item, query, pagination, model.Item.id
             )
-            domain_items: list[domain_model.Item] = []
-            for item in items:
-                domain_items.append(domain_model.Item.to_domain_model(item))
-            return domain_items
+            return self.__convert_to_domain_model_list(items)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
-
-    def list(self) -> list[model.Item]:
-        raise NotImplementedError()
 
     def detail(self, id: int) -> Optional[model.Item]:
         try:
@@ -129,3 +116,12 @@ class ItemStore(ItemStoreInterface):
 
     def delete(self) -> None:
         raise NotImplementedError()
+
+    def __convert_to_domain_model_list(
+        self,
+        items: list[model.Item],
+    ) -> list[domain_model.Item]:
+        domain_items: list[domain_model.Item] = []
+        for item in items:
+            domain_items.append(domain_model.Item.to_domain_model(item))
+        return domain_items

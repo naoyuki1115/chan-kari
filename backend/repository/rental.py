@@ -12,6 +12,10 @@ class RentalStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def list_valid2(self) -> list[domain_model.Rental]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def list_by_user_id(
         self,
         user_id: int,
@@ -27,10 +31,6 @@ class RentalStoreInterface(metaclass=abc.ABCMeta):
         closed: bool,
         pagination: PaginationQuery,
     ) -> list[domain_model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def list(self) -> list[model.Rental]:
         raise NotImplementedError()
 
     @abc.abstractmethod
