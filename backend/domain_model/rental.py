@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-from domain_model import Item
+import domain_model
 from domain_model.item import ItemStatus
 from util.error_msg import (
     NotFoundError,
@@ -22,7 +22,7 @@ class RentalStatus(str, Enum):
 class Rental:
     __id: int
     __user_id: int
-    __item: Item
+    __item: domain_model.Item
     __status: RentalStatus
     __rented_date: date
     __return_plan_date: date
@@ -53,7 +53,7 @@ class Rental:
     def __init__(
         self,
         user_id: int,
-        item: Item,
+        item: Optional[domain_model.Item],
         rented_date: date,
         return_plan_date: date,
     ):

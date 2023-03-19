@@ -86,7 +86,7 @@ class RentalUseCase(RentalUseCaseInterface):
             raise
 
     def rent_item2(self, req: RentRequest, user_id: int) -> domain_model.Rental:
-        item: domain_model.Item = self.item_store.detail2(req.item_id)
+        item = self.item_store.detail2(req.item_id)
         rental = domain_model.Rental(
             user_id, item, req.rental_date, req.return_plan_date
         )

@@ -1,5 +1,6 @@
 from datetime import date
 
+import domain_model
 from model import Base, Item, User
 from model.timestamp import Timestamp
 from sqlalchemy import Column, Date, ForeignKey, Index, Integer
@@ -34,3 +35,14 @@ class Rental(Base, Timestamp):
             postgresql_where=returned_date.is_(None),  # type:ignore
         ),
     )
+
+    @classmethod
+    def from_domain_model(cls, rental: domain_model.Rental):
+        return cls(
+            id=rental.get_id,
+            user_id=rental.get_user_id,
+            item_id=rental.get_item().get_id,
+            rented_date=rental.get_rented_date,
+            return_plan_date=rental.get_return_plan_date,
+            returned_date=rental.get_returned_date,
+        )

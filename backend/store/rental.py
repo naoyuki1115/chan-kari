@@ -1,5 +1,6 @@
 from typing import Optional
 
+import domain_model
 import model
 from repository import RentalStoreInterface
 from schema import PaginationQuery
@@ -57,6 +58,14 @@ class RentalStore(RentalStoreInterface):
 
     def create(self, rental: model.Rental) -> None:
         try:
+            self.db.add(rental)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def create2(self, domain_rental: domain_model.Rental) -> None:
+        try:
+            rental = model.Rental.from_domain_model(domain_rental)
             self.db.add(rental)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
