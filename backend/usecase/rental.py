@@ -180,7 +180,6 @@ class RentalUseCase(RentalUseCaseInterface):
         self, pagination: PaginationQuery, params: RentalListParams, user_id: int
     ) -> list[domain_model.Rental]:
         try:
-
             return self.rental_store.list_by_user_id2(
                 user_id, bool(params.closed), pagination
             )

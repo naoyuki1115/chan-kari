@@ -43,6 +43,30 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def list_by_user_id2(
+        self,
+        user_id: int,
+        closed: bool,
+        pagination: PaginationQuery,
+    ) -> list[domain_model.Rental]:
+        try:
+            query = self.db.query(model.Rental).filter(model.Rental.user_id == user_id)
+            if closed is True:
+                query = query.filter(model.Rental.returned_date != None)  # NOQA
+            else:
+                query = query.filter(model.Rental.returned_date == None)  # NOQA
+            rentals: list[model.Rental] = pagination_query(
+                model.Rental, query, pagination, model.Rental.id
+            )
+
+            domain_rentals: list[domain_model.Rental] = []
+            for rental in rentals:
+                domain_rentals.append(domain_model.Rental.to_domain_model(rental))
+            return domain_rentals
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def list(self) -> list[model.Rental]:
         raise NotImplementedError()
 
