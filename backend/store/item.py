@@ -96,6 +96,19 @@ class ItemStore(ItemStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def detail2(self, id: int) -> Optional[domain_model.Item]:
+        try:
+            item: model.Item = (
+                self.db.query(model.Item).filter(model.Item.id == id).one()
+            )
+            return domain_model.Item.to_domain_model(item)
+        except NoResultFound as err:
+            logger.info(f"({__name__}): {err}")
+            return None
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def create(self, item: model.Item) -> None:
         try:
             self.db.add(item)

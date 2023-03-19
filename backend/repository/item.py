@@ -38,7 +38,7 @@ class ItemStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def detail2(self, id: int) -> domain_model.Item:
+    def detail2(self, id: int) -> Optional[domain_model.Item]:
         raise NotImplementedError()
 
     @abc.abstractmethod
