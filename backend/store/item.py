@@ -17,14 +17,6 @@ class ItemStore(ItemStoreInterface):
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def list_available(self, pagination: PaginationQuery) -> list[model.Item]:
-        try:
-            q = self.db.query(model.Item).filter(model.Item.available == True)  # NOQA
-            return pagination_query(model.Item, q, pagination, model.Item.id)
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
     def list_public(
         self, pagination: PaginationQuery, isAvailable: bool
     ) -> list[domain_model.Item]:
@@ -52,16 +44,6 @@ class ItemStore(ItemStoreInterface):
 
     def list_by_user_id(
         self, pagination: PaginationQuery, user_id: int
-    ) -> list[model.Item]:
-        try:
-            q = self.db.query(model.Item).filter(model.Item.owner_id == user_id)
-            return pagination_query(model.Item, q, pagination, model.Item.id)
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def list_by_user_id2(
-        self, pagination: PaginationQuery, user_id: int
     ) -> list[domain_model.Item]:
         try:
             query = self.db.query(model.Item).filter(model.Item.owner_id == user_id)
@@ -73,17 +55,7 @@ class ItemStore(ItemStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def detail(self, id: int) -> Optional[model.Item]:
-        try:
-            return self.db.query(model.Item).filter(model.Item.id == id).one()
-        except NoResultFound as err:
-            logger.error(f"({__name__}): {err}")
-            return None
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def detail2(self, id: int) -> Optional[domain_model.Item]:
+    def detail(self, id: int) -> Optional[domain_model.Item]:
         try:
             item: model.Item = (
                 self.db.query(model.Item).filter(model.Item.id == id).one()
@@ -96,14 +68,7 @@ class ItemStore(ItemStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def create(self, item: model.Item) -> None:
-        try:
-            self.db.add(item)
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def create2(self, domain_item: domain_model.Item) -> None:
+    def create(self, domain_item: domain_model.Item) -> None:
         try:
             item: model.Item = model.Item.from_domain_model(domain_item)
             self.db.add(item)

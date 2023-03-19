@@ -1,5 +1,6 @@
-import domain_model
 from typing import Optional
+
+import domain_model
 from model import Base, Rental, User
 from model.timestamp import Timestamp
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String

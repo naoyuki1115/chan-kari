@@ -1,5 +1,6 @@
 from datetime import date
 from typing import Optional
+
 import domain_model
 from model import Base, Item, User
 from model.timestamp import Timestamp

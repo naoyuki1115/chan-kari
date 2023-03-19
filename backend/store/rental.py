@@ -16,19 +16,7 @@ class RentalStore(RentalStoreInterface):
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def list_valid(self) -> list[model.Rental]:
-        try:
-            return (
-                self.db.query(model.Rental)
-                .filter(model.Rental.returned_date == None)  # NOQA
-                .order_by(model.Rental.id)
-                .all()
-            )
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def list_valid2(self) -> list[domain_model.Rental]:
+    def list_valid(self) -> list[domain_model.Rental]:
         try:
             rentals: list[model.Rental] = (
                 self.db.query(model.Rental)
@@ -42,21 +30,6 @@ class RentalStore(RentalStoreInterface):
             raise
 
     def list_by_user_id(
-        self,
-        user_id: int,
-        closed: bool,
-        pagination: PaginationQuery,
-    ) -> list[model.Rental]:
-        try:
-            q = self.db.query(model.Rental).filter(model.Rental.user_id == user_id)
-            if closed is False:
-                q = q.filter(model.Rental.returned_date == None)  # NOQA
-            return pagination_query(model.Rental, q, pagination, model.Rental.id)
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def list_by_user_id2(
         self,
         user_id: int,
         closed: bool,
@@ -76,17 +49,7 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def detail(self, id: int) -> Optional[model.Rental]:
-        try:
-            return self.db.query(model.Rental).filter(model.Rental.id == id).one()
-        except NoResultFound as err:
-            logger.error(f"({__name__}): {err}")
-            return None
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def detail2(self, id: int) -> Optional[domain_model.Rental]:
+    def detail(self, id: int) -> Optional[domain_model.Rental]:
         try:
             rental = self.db.query(model.Rental).filter(model.Rental.id == id).one()
             return domain_model.Rental.to_domain_model(rental)
@@ -97,14 +60,7 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def create(self, rental: model.Rental) -> None:
-        try:
-            self.db.add(rental)
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def create2(self, domain_rental: domain_model.Rental) -> None:
+    def create(self, domain_rental: domain_model.Rental) -> None:
         try:
             rental = model.Rental.from_domain_model(domain_rental)
             self.db.add(rental)
@@ -112,24 +68,7 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def update(self, rental: model.Rental) -> None:
-        try:
-            _rental: model.Rental = (
-                self.db.query(model.Rental).filter(model.Rental.id == rental.id).one()
-            )
-            _rental.user_id = rental.user_id
-            _rental.item_id = rental.item_id
-            _rental.rented_date = rental.rented_date
-            _rental.returned_date = rental.returned_date
-            _rental.return_plan_date = rental.return_plan_date
-        except NoResultFound as err:
-            logger.error(f"({__name__}): {err}")
-            return None
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def update2(self, domain_rental: domain_model.Rental) -> None:
+    def update(self, domain_rental: domain_model.Rental) -> None:
         try:
             rental: model.Rental = (
                 self.db.query(model.Rental)
