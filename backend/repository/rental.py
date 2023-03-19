@@ -38,7 +38,7 @@ class RentalStoreInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def detail2(self, id: int) -> domain_model.Rental:
+    def detail2(self, id: int) -> Optional[domain_model.Rental]:
         raise NotImplementedError()
 
     @abc.abstractmethod

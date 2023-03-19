@@ -56,6 +56,17 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def detail2(self, id: int) -> Optional[domain_model.Rental]:
+        try:
+            rental = self.db.query(model.Rental).filter(model.Rental.id == id).one()
+            return domain_model.Rental.to_domain_model(rental)
+        except NoResultFound as err:
+            logger.info(f"({__name__}): {err}")
+            return None
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def create(self, rental: model.Rental) -> None:
         try:
             self.db.add(rental)
