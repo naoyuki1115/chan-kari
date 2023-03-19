@@ -30,7 +30,7 @@ class ItemStore(ItemStoreInterface):
     ) -> list[domain_model.Item]:
         try:
             query = (
-                self.db.query(model.Item, model.Rental)
+                self.db.query(model.Item)
                 .join(model.Item.id == model.Rental.item_id, isouter=True)
                 .filter(model.Item.available == True)  # NOQA
             )
@@ -42,8 +42,8 @@ class ItemStore(ItemStoreInterface):
                         model.Rental.returned_date != None,  # NOQA
                     )
                 )
-            items_with_rental: list[tuple[model.Item, model.Rental]] = pagination_query(
-                tuple[model.Item, model.Rental], query, pagination, model.Item.id
+            items_with_rental: list[model.Item] = pagination_query(
+                model.Item, query, pagination, model.Item.id
             )
 
             items: list[domain_model.Item] = []

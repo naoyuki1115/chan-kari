@@ -65,26 +65,26 @@ class Item:
     def set_rented_status(self):
         self.__status = ItemStatus.rented
 
-    def __judge_status(self, item_with_rental: tuple[model.Item, model.Rental]):
-        item = item_with_rental[0]
-        rental = item_with_rental[1]
-        if rental is not None and rental.rented_date is None:
-            self.__status = ItemStatus.rented
-        elif item.available is False:
+    def __judge_status(self, item_with_rental: model.Item):
+        if item_with_rental.available is False:
             self.__status = ItemStatus.private
+        elif (
+            len(list(filter(lambda r: r.returned_date is None, item_with_rental.rentals)))
+            > 0
+        ):
+            self.__status = ItemStatus.rented
         else:
             self.__status = ItemStatus.public
 
     @classmethod
-    def to_domain_model(cls, item_with_rental: tuple[model.Item, model.Rental]):
-        item = item_with_rental[0]
+    def to_domain_model(cls, item_with_rental: model.Item):
         model = cls(
-            name=item.name,
-            owner_id=item.owner_id,
-            image_url=item.image_url,
-            description=item.description,
-            author=item.author,
+            name=item_with_rental.name,
+            owner_id=item_with_rental.owner_id,
+            image_url=item_with_rental.image_url,
+            description=item_with_rental.description,
+            author=item_with_rental.author,
         )
-        model.__id = item.id
+        model.__id = item_with_rental.id
         model.__judge_status(item_with_rental)
         return model
