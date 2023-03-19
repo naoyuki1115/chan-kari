@@ -46,13 +46,13 @@ class ItemStore(ItemStoreInterface):
                 model.Item, query, pagination, model.Item.id
             )
 
-            items: list[domain_model.Item] = []
+            domain_items: list[domain_model.Item] = []
             for item_with_rental in items_with_rental:
-                item = domain_model.Item.to_domain_model(item_with_rental)
-                if item.get_status == domain_model.ItemStatus.private:
+                domain_item = domain_model.Item.to_domain_model(item_with_rental)
+                if domain_item.get_status == domain_model.ItemStatus.private:
                     raise
-                items.append(item)
-            return items
+                domain_items.append(domain_item)
+            return domain_items
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
@@ -63,6 +63,22 @@ class ItemStore(ItemStoreInterface):
         try:
             q = self.db.query(model.Item).filter(model.Item.owner_id == user_id)
             return pagination_query(model.Item, q, pagination, model.Item.id)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def list_by_user_id2(
+        self, pagination: PaginationQuery, user_id: int
+    ) -> list[domain_model.Item]:
+        try:
+            query = self.db.query(model.Item).filter(model.Item.owner_id == user_id)
+            items: list[model.Item] = pagination_query(
+                model.Item, query, pagination, model.Item.id
+            )
+            domain_items: list[domain_model.Item] = []
+            for item in items:
+                domain_items.append(domain_model.Item.to_domain_model(item))
+            return domain_items
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
