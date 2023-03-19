@@ -1,3 +1,4 @@
+import domain_model
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -32,13 +33,23 @@ def list_item(
             detail="Only either `before` or `after` can be specified",
         )
     try:
-        items = item_usecase.get_list(pagination, params)
+        items: list[domain_model.Item] = item_usecase.get_list(pagination, params)
+        item_res_list: list[ItemResponse] = []
+        for item in items:
+            item_res_list.append(
+                ItemResponse(
+                    item.get_id(),
+                    item.get_name(),
+                    item.get_status(),
+                    item.get_image_url(),
+                )
+            )
+        return item_res_list
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return items
 
 
 @router.get("/{item_id}")

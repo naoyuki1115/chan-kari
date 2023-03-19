@@ -1,3 +1,4 @@
+import domain_model
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -29,7 +30,8 @@ def create_item(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 1
-        item = item_usecase.create_item(req, user_id)
+        item: domain_model.Item = item_usecase.create_item(req, user_id)
+        return ItemCreateResponse(item.get_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
@@ -38,7 +40,6 @@ def create_item(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return item
 
 
 @router.get("", response_model=list[ItemResponse])
@@ -54,7 +55,18 @@ def list_owned_items(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        return item_usecase.get_my_list(pagination, user_id)
+        items: list[domain_model.Item] = item_usecase.get_my_list(pagination, user_id)
+        item_res_list: list[ItemResponse] = []
+        for item in items:
+            item_res_list.append(
+                ItemResponse(
+                    item.get_id(),
+                    item.get_name(),
+                    item.get_status(),
+                    item.get_image_url(),
+                )
+            )
+        return item_res_list
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

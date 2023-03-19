@@ -1,3 +1,4 @@
+import domain_model
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -47,7 +48,27 @@ def list_rental(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        return rental_usecase.get_my_list(pagination, params, user_id)
+        rentals: list[domain_model.Rental] = rental_usecase.get_my_list(
+            pagination, params, user_id
+        )
+        rental_res_list: list[RentalResponse] = []
+        for rental in rentals:
+            if rental.get_status() == domain_model.RentalStatus.returned:
+                closed = True
+            else:
+                closed = False
+            rental_res_list.append(
+                RentalResponse(
+                    rental.get_id(),
+                    closed,
+                    rental.get_rented_date(),
+                    rental.get_return_plan_date(),
+                    rental.get_returned_date(),
+                    rental.get_item().get_id(),
+                    rental.get_item().get_name(),
+                )
+            )
+        return rental_res_list
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
@@ -74,7 +95,8 @@ def rent_item(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        return rental_usecase.rent_item(req, user_id)
+        rental: domain_model.Rental = rental_usecase.rent_item(req, user_id)
+        return RentResponse(rental.get_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

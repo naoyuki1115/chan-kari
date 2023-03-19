@@ -14,9 +14,8 @@ class RentRequest(BaseModel):
 class RentResponse(BaseModel):
     id: int
 
-    @classmethod
-    def new(cls, id):
-        return cls(id=id)
+    def __init__(self, id: int):
+        self.id = id
 
 
 class ReturnParams(BaseModel):
@@ -36,16 +35,20 @@ class RentalResponse(BaseModel):
     item_id: int = Field(alias="itemId")
     item_name: str = Field(alias="itemName")
 
-    @classmethod
-    def new(
-        cls, id, closed, rental_date, return_plan_date, return_date, item_id, item_name
+    def __init__(
+        self,
+        id: int,
+        closed: bool,
+        rental_date: date,
+        return_plan_date: date,
+        return_date: Optional[date],
+        item_id: int,
+        item_name: str,
     ):
-        return cls(
-            id=id,
-            closed=closed,
-            rentalDate=rental_date,
-            returnPlanDate=return_plan_date,
-            returnDate=return_date,
-            itemId=item_id,
-            itemName=item_name,
-        )
+        self.id = id
+        self.closed = closed
+        self.rental_date = rental_date
+        self.return_plan_date = return_plan_date
+        self.return_date = return_date
+        self.item_id = item_id
+        self.item_name = item_name

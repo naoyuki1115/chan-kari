@@ -1,14 +1,8 @@
-from enum import Enum
 from typing import Optional
 
+import domain_model
 from fastapi import Query
 from pydantic import BaseModel, Field
-
-
-class ItemStatus(str, Enum):
-    available = "available"
-    unavailable = "unavailable"
-    rented = "rented"
 
 
 class ItemListParams(BaseModel):
@@ -18,14 +12,22 @@ class ItemListParams(BaseModel):
 class ItemResponse(BaseModel):
     id: int
     name: str
-    status: ItemStatus
+    status: domain_model.ItemStatus
     image_url: Optional[str] = Field(
         None, alias="imageUrl", example="http://example.com/test.png"
     )
 
-    @classmethod
-    def new(cls, id, name, status, image_url):
-        return cls(id=id, name=name, status=status, imageUrl=image_url)
+    def __init__(
+        self,
+        id: int,
+        name: str,
+        status: domain_model.ItemStatus,
+        image_url: Optional[str] = None,
+    ):
+        self.id = id
+        self.name = name
+        self.status = status
+        self.image_url = image_url
 
 
 class ItemCreateRequest(BaseModel):
@@ -41,6 +43,5 @@ class ItemCreateRequest(BaseModel):
 class ItemCreateResponse(BaseModel):
     id: int
 
-    @classmethod
-    def new(cls, id):
-        return cls(id=id)
+    def __init__(self, id: int):
+        self.id = id
