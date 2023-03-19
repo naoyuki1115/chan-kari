@@ -148,10 +148,13 @@ class ItemUseCase(ItemUseCaseInterface):
 
     def create_item2(self, req: ItemCreateRequest, user_id: int) -> domain_model.Item:
         try:
-            item = domain_model.Item(
+            item: domain_model.Item = domain_model.Item(
                 req.name, user_id, req.image_url, req.description, req.author
             )
-            item.set_public_status()
+            if req.draft:
+                item.set_private_status()
+            else:
+                item.set_public_status()
             self.item_store.create2(item)
             self.tx.commit()
             return item

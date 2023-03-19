@@ -24,5 +24,18 @@ class Item(Base, Timestamp):
     user: User = relationship("User", back_populates="items")
     rentals: list[Rental] = relationship("Rental", back_populates="item")
 
-    users = relationship("User", back_populates="items")
-    rentals = relationship("Rental", back_populates="items")
+    @classmethod
+    def from_domain_model(cls, item: domain_model.Item):
+        if item.get_status == ItemStatus.private:
+            available = False
+        else:
+            available = True
+        return cls(
+            id=item.get_id,
+            name=item.get_name,
+            owner_id=item.get_owner_id,
+            available=available,
+            imageUrl=item.get_image_url,
+            description=item.get_description,
+            author=item.get_author,
+        )

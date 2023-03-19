@@ -116,6 +116,14 @@ class ItemStore(ItemStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
+    def create2(self, domain_item: domain_model.Item) -> None:
+        try:
+            item: model.Item = model.Item.from_domain_model(domain_item)
+            self.db.add(item)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
     def update(self) -> None:
         raise NotImplementedError()
 
