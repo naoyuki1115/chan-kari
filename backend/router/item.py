@@ -33,7 +33,7 @@ def list_item(
         pagination.validate()
         params.validate()
 
-        items: list[Item] = item_usecase.get_list(pagination, params)
+        items: list[Item] = item_usecase.get_list(pagination, bool(params.available))
         item_res_list: list[ItemResponse] = []
         for item in items:
             item_res_list.append(

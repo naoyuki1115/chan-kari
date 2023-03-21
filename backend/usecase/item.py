@@ -5,7 +5,7 @@ from psycopg2.errors import ForeignKeyViolation
 from database.transaction import TransactionInterface
 from domain import Item
 from repository import ItemStoreInterface, RentalStoreInterface
-from schema import ItemCreateRequest, ItemListParams, PaginationQuery
+from schema import ItemCreateRequest, PaginationQuery
 from util.error_msg import NotFoundError
 from util.logging import get_logger
 
@@ -14,9 +14,7 @@ logger = get_logger()
 
 class ItemUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def get_list(
-        self, pagination: PaginationQuery, params: ItemListParams
-    ) -> list[Item]:
+    def get_list(self, pagination: PaginationQuery, available: bool) -> list[Item]:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -39,11 +37,9 @@ class ItemUseCase(ItemUseCaseInterface):
         self.item_store: ItemStoreInterface = item
         self.rental_store: RentalStoreInterface = rental
 
-    def get_list(
-        self, pagination: PaginationQuery, params: ItemListParams
-    ) -> list[Item]:
+    def get_list(self, pagination: PaginationQuery, available: bool) -> list[Item]:
         try:
-            return self.item_store.list_public(pagination, bool(params.available))
+            return self.item_store.list_public(pagination, available)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise

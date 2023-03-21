@@ -6,7 +6,7 @@ from psycopg2.errors import ForeignKeyViolation, UniqueViolation
 from database.transaction import TransactionInterface
 from domain import Rental
 from repository import ItemStoreInterface, RentalStoreInterface
-from schema import PaginationQuery, RentalListParams, RentRequest, ReturnParams
+from schema import PaginationQuery, RentRequest
 from util.error_msg import NotFoundError, ResourceAlreadyExistsError
 from util.logging import get_logger
 
@@ -19,12 +19,12 @@ class RentalUseCaseInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def return_item(self, params: ReturnParams, user_id: int) -> None:
+    def return_item(self, rental_id: int, user_id: int) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
     def get_my_list(
-        self, pagination: PaginationQuery, params: RentalListParams, user_id: int
+        self, pagination: PaginationQuery, closed: bool, user_id: int
     ) -> list[Rental]:
         raise NotImplementedError
 
@@ -47,9 +47,9 @@ class RentalUseCase(RentalUseCaseInterface):
         self.tx.commit()
         return rental
 
-    def return_item(self, params: ReturnParams, user_id: int) -> None:
+    def return_item(self, rental_id: int, user_id: int) -> None:
         try:
-            rental: Optional[Rental] = self.rental_store.detail(params.rental_id)
+            rental: Optional[Rental] = self.rental_store.detail(rental_id)
             if rental is None:
                 raise NotFoundError
             rental.return_item(user_id)
@@ -69,12 +69,10 @@ class RentalUseCase(RentalUseCaseInterface):
             raise
 
     def get_my_list(
-        self, pagination: PaginationQuery, params: RentalListParams, user_id: int
+        self, pagination: PaginationQuery, closed: bool, user_id: int
     ) -> list[Rental]:
         try:
-            return self.rental_store.list_by_user_id(
-                user_id, bool(params.closed), pagination
-            )
+            return self.rental_store.list_by_user_id(user_id, closed, pagination)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise

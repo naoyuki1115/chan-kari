@@ -18,9 +18,9 @@ from usecase import RentalUseCase, RentalUseCaseInterface
 from util.error_msg import (
     NotFoundError,
     OperationIsForbiddenError,
+    PaginationError,
     ResourceAlreadyExistsError,
     ResourceUnavailableError,
-    PaginationError,
 )
 from util.logging import get_logger
 
@@ -48,7 +48,9 @@ def list_rental(
 
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        rentals: list[Rental] = rental_usecase.get_my_list(pagination, params, user_id)
+        rentals: list[Rental] = rental_usecase.get_my_list(
+            pagination, bool(params.closed), user_id
+        )
         rental_res_list: list[RentalResponse] = []
         for rental in rentals:
             if rental.get_status() == RentalStatus.returned:
@@ -133,7 +135,7 @@ def return_rental(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 3
-        rental_usecase.return_item(params, user_id)
+        rental_usecase.return_item(params.rental_id, user_id)
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
