@@ -1,9 +1,5 @@
 from typing import Optional
 
-import domain_model
-import model
-from repository import ItemStoreInterface
-from schema import PaginationQuery
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
@@ -24,19 +20,19 @@ class ItemStore(ItemStoreInterface):
 
     def list_public(self, pagination: PaginationQuery, isAvailable: bool) -> list[Item]:
         try:
-            query = (
-                self.db.query(ItemDTO)
-                .join(ItemDTO.id == RentalDTO.item_id, isouter=True)
-                .filter(ItemDTO.available == True)  # NOQA
-            )
+            query = self.db.query(ItemDTO).filter(ItemDTO.available == True)  # NOQA
+
             # 未予約のものだけに絞り込む (未予約=予約record無しor返却されている)
             if isAvailable:
-                query = query.filter(
-                    or_(
-                        RentalDTO == None,  # NOQA
-                        RentalDTO.returned_date != None,  # NOQA
-                    )
+                sub_query = self.db.query(RentalDTO).filter(
+                    RentalDTO.returned_date == None  # NOQA
                 )
+                query = query.join(
+                    RentalDTO, ItemDTO.id == RentalDTO.item_id, isouter=True
+                ).filter(
+                    or_(RentalDTO.id == None, ~sub_query.exists())  # NOQA
+                )
+
             items: list[ItemDTO] = pagination_query(
                 ItemDTO, query, pagination, ItemDTO.id
             )
