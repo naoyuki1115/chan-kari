@@ -26,8 +26,8 @@ class RentalDTO(Base, Timestamp):
     return_plan_date: date = Column(Date, nullable=False)  # type: ignore
     returned_date: Optional[date] = Column(Date, nullable=True)  # type: ignore
 
-    users = relationship("UserDTO", back_populates="rentals")
-    items = relationship("ItemDTO", back_populates="rentals")
+    user = relationship("UserDTO", back_populates="rentals")
+    item = relationship("ItemDTO", back_populates="rentals")
 
     __table_args__ = (
         Index(
@@ -52,7 +52,7 @@ class RentalDTO(Base, Timestamp):
     def to_domain_model(self) -> Rental:
         rental = Rental(
             user_id=self.user_id,
-            item=self.item,
+            item=self.item.to_domain_model(),
             rented_date=self.rented_date,
             return_plan_date=self.return_plan_date,
         )

@@ -12,5 +12,5 @@ class UserDTO(Base, Timestamp):
     email: str = Column(String, nullable=False, unique=True)  # type: ignore
     image_url: str = Column(String, nullable=True)  # type: ignore
 
-    items = relationship("ItemDTO", back_populates="users")
-    rentals = relationship("RentalDTO", back_populates="users")
+    items = relationship("ItemDTO", back_populates="owner")
+    rentals = relationship("RentalDTO", back_populates="user")

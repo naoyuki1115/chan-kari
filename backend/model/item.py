@@ -22,8 +22,8 @@ class ItemDTO(Base, Timestamp):
     description: Optional[str] = Column(String, nullable=True)  # type: ignore
     author: Optional[str] = Column(String, nullable=True)  # type: ignore
 
-    users = relationship("UserDTO", back_populates="items")
-    rentals = relationship("RentalDTO", back_populates="items")
+    owner = relationship("UserDTO", back_populates="items")
+    rentals = relationship("RentalDTO", back_populates="item")
 
     @classmethod
     def from_domain_model(cls, item: Item):
