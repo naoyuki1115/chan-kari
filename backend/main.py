@@ -8,6 +8,7 @@ from fastapi.responses import PlainTextResponse
 from database.database import create_table
 from router import route
 
+# Create db table
 create_table()
 
 app = FastAPI()
