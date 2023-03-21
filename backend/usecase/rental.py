@@ -1,13 +1,11 @@
 import abc
 from typing import Optional
 
-from psycopg2.errors import ForeignKeyViolation, UniqueViolation
-
 from database.transaction import TransactionInterface
-from domain import Rental
+from domain import Item, Rental
 from repository import ItemStoreInterface, RentalStoreInterface
 from schema import PaginationQuery, RentRequest
-from util.error_msg import NotFoundError, ResourceAlreadyExistsError
+from util.error_msg import NotFoundError
 from util.logging import get_logger
 
 logger = get_logger()
@@ -41,11 +39,18 @@ class RentalUseCase(RentalUseCaseInterface):
         self.rental_store: RentalStoreInterface = rental
 
     def rent_item(self, req: RentRequest, user_id: int) -> Rental:
-        item = self.item_store.detail(req.item_id)
-        rental = Rental(user_id, item, req.rental_date, req.return_plan_date)
-        self.rental_store.create(rental)
-        self.tx.commit()
-        return rental
+        try:
+            item: Optional[Item] = self.item_store.detail(req.item_id)
+            rental = Rental.new_rental(
+                user_id, item, req.rental_date, req.return_plan_date
+            )
+            self.rental_store.create(rental)
+            self.tx.commit()
+            return rental
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            self.tx.rollback()
+            raise
 
     def return_item(self, rental_id: int, user_id: int) -> None:
         try:
@@ -55,14 +60,6 @@ class RentalUseCase(RentalUseCaseInterface):
             rental.return_item(user_id)
             self.rental_store.update(rental)
             self.tx.commit()
-        except UniqueViolation as err:
-            logger.error(f"({__name__}): {err}")
-            self.tx.rollback()
-            raise ResourceAlreadyExistsError
-        except ForeignKeyViolation as err:
-            logger.error(f"({__name__}): {err}")
-            self.tx.rollback()
-            raise NotFoundError
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             self.tx.rollback()

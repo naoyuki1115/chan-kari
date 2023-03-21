@@ -1,6 +1,8 @@
 from typing import Optional
 
+from psycopg2.errors import ForeignKeyViolation, UniqueViolation
 from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -9,6 +11,7 @@ from model import ItemDTO, RentalDTO
 from repository import ItemStoreInterface
 from schema import PaginationQuery
 from store.util import pagination_query
+from util.error_msg import NotFoundError, ResourceAlreadyExistsError
 from util.logging import get_logger
 
 logger = get_logger()
@@ -67,6 +70,17 @@ class ItemStore(ItemStoreInterface):
         try:
             item: ItemDTO = ItemDTO.from_domain_model(domain_item)
             self.db.add(item)
+            # Note: 一時的にDBへ反映し、IDを取得
+            self.db.flush()
+            domain_item.set_id(item.id)
+        except IntegrityError as err:
+            logger.error(f"({__name__}): {err}")
+            if isinstance(err.orig, UniqueViolation):
+                raise ResourceAlreadyExistsError
+            elif isinstance(err.orig, ForeignKeyViolation):
+                raise NotFoundError
+            else:
+                raise err
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise

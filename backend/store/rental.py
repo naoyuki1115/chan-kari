@@ -1,5 +1,7 @@
 from typing import Optional
 
+from psycopg2.errors import ForeignKeyViolation, UniqueViolation
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -8,6 +10,7 @@ from model import RentalDTO
 from repository import RentalStoreInterface
 from schema import PaginationQuery
 from store.util import pagination_query
+from util.error_msg import NotFoundError, ResourceAlreadyExistsError
 from util.logging import get_logger
 
 logger = get_logger()
@@ -67,6 +70,17 @@ class RentalStore(RentalStoreInterface):
         try:
             rental = RentalDTO.from_domain_model(domain_rental)
             self.db.add(rental)
+            # Note: 一時的にDBへ反映し、IDを取得
+            self.db.flush()
+            domain_rental.set_id(rental.id)
+        except IntegrityError as err:
+            logger.error(f"({__name__}): {err}")
+            if isinstance(err.orig, UniqueViolation):
+                raise ResourceAlreadyExistsError
+            elif isinstance(err.orig, ForeignKeyViolation):
+                raise NotFoundError
+            else:
+                raise err
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
@@ -83,9 +97,18 @@ class RentalStore(RentalStoreInterface):
             rental.rented_date = domain_rental.get_rented_date()
             rental.return_plan_date = domain_rental.get_return_plan_date()
             rental.returned_date = domain_rental.get_returned_date()
+            self.db.flush()
         except NoResultFound as err:
             logger.error(f"({__name__}): {err}")
             return None
+        except IntegrityError as err:
+            logger.error(f"({__name__}): {err}")
+            if isinstance(err.orig, UniqueViolation):
+                raise ResourceAlreadyExistsError
+            elif isinstance(err.orig, ForeignKeyViolation):
+                raise NotFoundError
+            else:
+                raise err
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise

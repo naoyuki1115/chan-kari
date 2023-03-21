@@ -41,7 +41,6 @@ class RentalDTO(Base, Timestamp):
     @classmethod
     def from_domain_model(cls, rental: Rental):
         return cls(
-            id=rental.get_id(),
             user_id=rental.get_user_id(),
             item_id=rental.get_item().get_id(),
             rented_date=rental.get_rented_date(),

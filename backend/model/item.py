@@ -32,11 +32,10 @@ class ItemDTO(Base, Timestamp):
         else:
             available = True
         return cls(
-            id=item.get_id(),
             name=item.get_name(),
             owner_id=item.get_owner_id(),
             available=available,
-            imageUrl=item.get_image_url(),
+            image_url=item.get_image_url(),
             description=item.get_description(),
             author=item.get_author(),
         )

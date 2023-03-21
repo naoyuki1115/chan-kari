@@ -1,12 +1,9 @@
 import abc
 
-from psycopg2.errors import ForeignKeyViolation
-
 from database.transaction import TransactionInterface
 from domain import Item
 from repository import ItemStoreInterface, RentalStoreInterface
 from schema import ItemCreateRequest, PaginationQuery
-from util.error_msg import NotFoundError
 from util.logging import get_logger
 
 logger = get_logger()
@@ -63,10 +60,6 @@ class ItemUseCase(ItemUseCaseInterface):
             self.item_store.create(item)
             self.tx.commit()
             return item
-        except ForeignKeyViolation as err:
-            logger.error(f"({__name__}): {err}")
-            self.tx.rollback()
-            raise NotFoundError
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             self.tx.rollback()
