@@ -7,6 +7,11 @@ from schema import PaginationQuery
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
+
+from domain import Item
+from model import ItemDTO, RentalDTO
+from repository import ItemStoreInterface
+from schema import PaginationQuery
 from store.util import pagination_query
 from util.logging import get_logger
 
@@ -17,50 +22,44 @@ class ItemStore(ItemStoreInterface):
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def list_public(
-        self, pagination: PaginationQuery, isAvailable: bool
-    ) -> list[domain_model.Item]:
+    def list_public(self, pagination: PaginationQuery, isAvailable: bool) -> list[Item]:
         try:
             query = (
-                self.db.query(model.Item)
-                .join(model.Item.id == model.Rental.item_id, isouter=True)
-                .filter(model.Item.available == True)  # NOQA
+                self.db.query(ItemDTO)
+                .join(ItemDTO.id == RentalDTO.item_id, isouter=True)
+                .filter(ItemDTO.available == True)  # NOQA
             )
             # 未予約のものだけに絞り込む (未予約=予約record無しor返却されている)
             if isAvailable:
                 query = query.filter(
                     or_(
-                        model.Rental == None,  # NOQA
-                        model.Rental.returned_date != None,  # NOQA
+                        RentalDTO == None,  # NOQA
+                        RentalDTO.returned_date != None,  # NOQA
                     )
                 )
-            items: list[model.Item] = pagination_query(
-                model.Item, query, pagination, model.Item.id
+            items: list[ItemDTO] = pagination_query(
+                ItemDTO, query, pagination, ItemDTO.id
             )
             return self.__convert_to_domain_model_list(items)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
 
-    def list_by_user_id(
-        self, pagination: PaginationQuery, user_id: int
-    ) -> list[domain_model.Item]:
+    def list_by_user_id(self, pagination: PaginationQuery, user_id: int) -> list[Item]:
         try:
-            query = self.db.query(model.Item).filter(model.Item.owner_id == user_id)
-            items: list[model.Item] = pagination_query(
-                model.Item, query, pagination, model.Item.id
+            query = self.db.query(ItemDTO).filter(ItemDTO.owner_id == user_id)
+            items: list[ItemDTO] = pagination_query(
+                ItemDTO, query, pagination, ItemDTO.id
             )
             return self.__convert_to_domain_model_list(items)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
 
-    def detail(self, id: int) -> Optional[domain_model.Item]:
+    def detail(self, id: int) -> Optional[Item]:
         try:
-            item: model.Item = (
-                self.db.query(model.Item).filter(model.Item.id == id).one()
-            )
-            return domain_model.Item.to_domain_model(item)
+            item: ItemDTO = self.db.query(ItemDTO).filter(ItemDTO.id == id).one()
+            return item.to_domain_model()
         except NoResultFound as err:
             logger.info(f"({__name__}): {err}")
             return None
@@ -68,9 +67,9 @@ class ItemStore(ItemStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def create(self, domain_item: domain_model.Item) -> None:
+    def create(self, domain_item: Item) -> None:
         try:
-            item: model.Item = model.Item.from_domain_model(domain_item)
+            item: ItemDTO = ItemDTO.from_domain_model(domain_item)
             self.db.add(item)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
@@ -84,9 +83,9 @@ class ItemStore(ItemStoreInterface):
 
     def __convert_to_domain_model_list(
         self,
-        items: list[model.Item],
-    ) -> list[domain_model.Item]:
-        domain_items: list[domain_model.Item] = []
+        items: list[ItemDTO],
+    ) -> list[Item]:
+        domain_items: list[Item] = []
         for item in items:
-            domain_items.append(domain_model.Item.to_domain_model(item))
+            domain_items.append(item.to_domain_model())
         return domain_items

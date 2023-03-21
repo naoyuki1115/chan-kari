@@ -1,15 +1,16 @@
-from model import Base, Item, Rental
-from model.timestamp import Timestamp
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
+from model import Base
+from model.timestamp import Timestamp
 
-class User(Base, Timestamp):
+
+class UserDTO(Base, Timestamp):
     __tablename__ = "users"
     id: int = Column(Integer, primary_key=True, autoincrement=True)  # type: ignore
     name: str = Column(String, nullable=False)  # type: ignore
     email: str = Column(String, nullable=False, unique=True)  # type: ignore
     image_url: str = Column(String, nullable=True)  # type: ignore
 
-    items: list[Item] = relationship("Item", back_populates="user")
-    rentals: list[Rental] = relationship("Rental", back_populates="user")
+    items = relationship("ItemDTO", back_populates="users")
+    rentals = relationship("RentalDTO", back_populates="users")

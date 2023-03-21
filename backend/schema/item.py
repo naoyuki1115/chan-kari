@@ -1,8 +1,9 @@
 from typing import Optional
 
-import domain_model
 from fastapi import Query
 from pydantic import BaseModel, Field
+
+from domain.item import ItemStatus
 
 
 class ItemListParams(BaseModel):
@@ -12,22 +13,20 @@ class ItemListParams(BaseModel):
 class ItemResponse(BaseModel):
     id: int
     name: str
-    status: domain_model.ItemStatus
+    status: ItemStatus
     image_url: Optional[str] = Field(
         None, alias="imageUrl", example="http://example.com/test.png"
     )
 
-    def __init__(
-        self,
+    @classmethod
+    def new(
+        cls,
         id: int,
         name: str,
-        status: domain_model.ItemStatus,
+        status: ItemStatus,
         image_url: Optional[str] = None,
-    ):
-        self.id = id
-        self.name = name
-        self.status = status
-        self.image_url = image_url
+    ) -> "ItemResponse":
+        return cls(id=id, name=name, status=status, imageUrl=image_url)
 
 
 class ItemCreateRequest(BaseModel):
@@ -43,5 +42,6 @@ class ItemCreateRequest(BaseModel):
 class ItemCreateResponse(BaseModel):
     id: int
 
-    def __init__(self, id: int):
-        self.id = id
+    @classmethod
+    def new(cls, id: int) -> "ItemCreateResponse":
+        return cls(id=id)

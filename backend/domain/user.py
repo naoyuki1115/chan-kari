@@ -13,6 +13,6 @@ class User:
         email: str,
         image_url: Optional[str] = None,
     ):
-        self.__name: str = name
+        self.__name = name
         self.__email: str = email
         self.__image_url: Optional[str] = image_url

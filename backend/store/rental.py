@@ -1,11 +1,12 @@
 from typing import Optional
 
-import domain_model
-import model
-from repository import RentalStoreInterface
-from schema import PaginationQuery
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
+
+from domain import Rental
+from model import RentalDTO
+from repository import RentalStoreInterface
+from schema import PaginationQuery
 from store.util import pagination_query
 from util.logging import get_logger
 
@@ -16,12 +17,12 @@ class RentalStore(RentalStoreInterface):
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def list_valid(self) -> list[domain_model.Rental]:
+    def list_valid(self) -> list[Rental]:
         try:
-            rentals: list[model.Rental] = (
-                self.db.query(model.Rental)
-                .filter(model.Rental.returned_date == None)  # NOQA
-                .order_by(model.Rental.id)
+            rentals: list[RentalDTO] = (
+                self.db.query(RentalDTO)
+                .filter(RentalDTO.returned_date == None)  # NOQA
+                .order_by(RentalDTO.id)
                 .all()
             )
             return self.__convert_to_domain_model_list(rentals)
@@ -34,25 +35,27 @@ class RentalStore(RentalStoreInterface):
         user_id: int,
         closed: bool,
         pagination: PaginationQuery,
-    ) -> list[domain_model.Rental]:
+    ) -> list[Rental]:
         try:
-            query = self.db.query(model.Rental).filter(model.Rental.user_id == user_id)
+            query = self.db.query(RentalDTO).filter(RentalDTO.user_id == user_id)
             if closed is True:
-                query = query.filter(model.Rental.returned_date != None)  # NOQA
+                query = query.filter(RentalDTO.returned_date != None)  # NOQA
             else:
-                query = query.filter(model.Rental.returned_date == None)  # NOQA
-            rentals: list[model.Rental] = pagination_query(
-                model.Rental, query, pagination, model.Rental.id
+                query = query.filter(RentalDTO.returned_date == None)  # NOQA
+            rentals: list[RentalDTO] = pagination_query(
+                RentalDTO, query, pagination, RentalDTO.id
             )
             return self.__convert_to_domain_model_list(rentals)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
 
-    def detail(self, id: int) -> Optional[domain_model.Rental]:
+    def detail(self, id: int) -> Optional[Rental]:
         try:
-            rental = self.db.query(model.Rental).filter(model.Rental.id == id).one()
-            return domain_model.Rental.to_domain_model(rental)
+            rental: RentalDTO = (
+                self.db.query(RentalDTO).filter(RentalDTO.id == id).one()
+            )
+            return rental.to_domain_model()
         except NoResultFound as err:
             logger.info(f"({__name__}): {err}")
             return None
@@ -60,19 +63,19 @@ class RentalStore(RentalStoreInterface):
             logger.error(f"({__name__}): {err}")
             raise
 
-    def create(self, domain_rental: domain_model.Rental) -> None:
+    def create(self, domain_rental: Rental) -> None:
         try:
-            rental = model.Rental.from_domain_model(domain_rental)
+            rental = RentalDTO.from_domain_model(domain_rental)
             self.db.add(rental)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
 
-    def update(self, domain_rental: domain_model.Rental) -> None:
+    def update(self, domain_rental: Rental) -> None:
         try:
-            rental: model.Rental = (
-                self.db.query(model.Rental)
-                .filter(model.Rental.id == domain_rental.get_id())
+            rental: RentalDTO = (
+                self.db.query(RentalDTO)
+                .filter(RentalDTO.id == domain_rental.get_id())
                 .one()
             )
             rental.user_id = domain_rental.get_user_id()
@@ -92,9 +95,9 @@ class RentalStore(RentalStoreInterface):
 
     def __convert_to_domain_model_list(
         self,
-        rentals: list[model.Rental],
-    ) -> list[domain_model.Rental]:
-        domain_rentals: list[domain_model.Rental] = []
+        rentals: list[RentalDTO],
+    ) -> list[Rental]:
+        domain_rentals: list[Rental] = []
         for rental in rentals:
-            domain_rentals.append(domain_model.Rental.to_domain_model(rental))
+            domain_rentals.append(rental.to_domain_model())
         return domain_rentals

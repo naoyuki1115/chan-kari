@@ -1,14 +1,15 @@
 from datetime import date
 from typing import Optional
 
-import domain_model
-from model import Base, Item, User
-from model.timestamp import Timestamp
 from sqlalchemy import Column, Date, ForeignKey, Index, Integer
 from sqlalchemy.orm import relationship
 
+from domain import Rental
+from model import Base
+from model.timestamp import Timestamp
 
-class Rental(Base, Timestamp):
+
+class RentalDTO(Base, Timestamp):
     __tablename__ = "rentals"
     id: int = Column(Integer, primary_key=True, autoincrement=True)  # type: ignore
     user_id: int = Column(  # type: ignore
@@ -25,8 +26,8 @@ class Rental(Base, Timestamp):
     return_plan_date: date = Column(Date, nullable=False)  # type: ignore
     returned_date: Optional[date] = Column(Date, nullable=True)  # type: ignore
 
-    user: User = relationship("User", back_populates="rentals")
-    item: Item = relationship("Item", back_populates="rentals")
+    users = relationship("UserDTO", back_populates="rentals")
+    items = relationship("ItemDTO", back_populates="rentals")
 
     __table_args__ = (
         Index(
@@ -38,7 +39,7 @@ class Rental(Base, Timestamp):
     )
 
     @classmethod
-    def from_domain_model(cls, rental: domain_model.Rental):
+    def from_domain_model(cls, rental: Rental):
         return cls(
             id=rental.get_id(),
             user_id=rental.get_user_id(),
@@ -47,3 +48,16 @@ class Rental(Base, Timestamp):
             return_plan_date=rental.get_return_plan_date(),
             returned_date=rental.get_returned_date(),
         )
+
+    def to_domain_model(self) -> Rental:
+        rental = Rental(
+            user_id=self.user_id,
+            item=self.item,
+            rented_date=self.rented_date,
+            return_plan_date=self.return_plan_date,
+        )
+        rental.set_id(self.id)
+        if self.returned_date is not None:
+            rental.set_returned_date(self.returned_date)
+        rental.set_status()
+        return rental

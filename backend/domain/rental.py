@@ -3,9 +3,7 @@ from enum import Enum
 from typing import Optional
 from zoneinfo import ZoneInfo
 
-import domain_model
-import model
-from domain_model.item import ItemStatus
+from domain import Item, ItemStatus
 from util.error_msg import (
     NotFoundError,
     OperationIsForbiddenError,
@@ -23,7 +21,7 @@ class RentalStatus(str, Enum):
 class Rental:
     __id: int
     __user_id: int
-    __item: domain_model.Item
+    __item: Item
     __status: RentalStatus
     __rented_date: date
     __return_plan_date: date
@@ -59,10 +57,16 @@ class Rental:
         else:
             self.__status = RentalStatus.active
 
+    def set_id(self, id: int):
+        self.__id = id
+
+    def set_returned_date(self, return_date: date):
+        self.__returned_date = return_date
+
     def __init__(
         self,
         user_id: int,
-        item: Optional[domain_model.Item],
+        item: Optional[Item],
         rented_date: date,
         return_plan_date: date,
     ):
@@ -87,16 +91,3 @@ class Rental:
 
         self.__status = RentalStatus.returned
         self.__returned_date = datetime.now(ZoneInfo("Asia/Tokyo")).date()
-
-    @classmethod
-    def to_domain_model(cls, rental: model.Rental):
-        model = cls(
-            user_id=rental.user_id,
-            item=rental.item,
-            rented_date=rental.rented_date,
-            return_plan_date=rental.return_plan_date,
-        )
-        model.__id = rental.id
-        model.__returned_date = rental.returned_date
-        model.set_status()
-        return model

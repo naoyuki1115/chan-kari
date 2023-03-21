@@ -1,9 +1,10 @@
 import abc
 from typing import Optional
 
-import domain_model
-from database.transaction import TransactionInterface
 from psycopg2.errors import ForeignKeyViolation, UniqueViolation
+
+from database.transaction import TransactionInterface
+from domain import Rental
 from repository import ItemStoreInterface, RentalStoreInterface
 from schema import PaginationQuery, RentalListParams, RentRequest, ReturnParams
 from util.error_msg import NotFoundError, ResourceAlreadyExistsError
@@ -14,7 +15,7 @@ logger = get_logger()
 
 class RentalUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def rent_item(self, req: RentRequest, user_id: int) -> domain_model.Rental:
+    def rent_item(self, req: RentRequest, user_id: int) -> Rental:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -24,7 +25,7 @@ class RentalUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_my_list(
         self, pagination: PaginationQuery, params: RentalListParams, user_id: int
-    ) -> list[domain_model.Rental]:
+    ) -> list[Rental]:
         raise NotImplementedError
 
 
@@ -39,20 +40,16 @@ class RentalUseCase(RentalUseCaseInterface):
         self.item_store: ItemStoreInterface = item
         self.rental_store: RentalStoreInterface = rental
 
-    def rent_item(self, req: RentRequest, user_id: int) -> domain_model.Rental:
+    def rent_item(self, req: RentRequest, user_id: int) -> Rental:
         item = self.item_store.detail(req.item_id)
-        rental = domain_model.Rental(
-            user_id, item, req.rental_date, req.return_plan_date
-        )
+        rental = Rental(user_id, item, req.rental_date, req.return_plan_date)
         self.rental_store.create(rental)
         self.tx.commit()
         return rental
 
     def return_item(self, params: ReturnParams, user_id: int) -> None:
         try:
-            rental: Optional[domain_model.Rental] = self.rental_store.detail(
-                params.rental_id
-            )
+            rental: Optional[Rental] = self.rental_store.detail(params.rental_id)
             if rental is None:
                 raise NotFoundError
             rental.return_item(user_id)
@@ -73,7 +70,7 @@ class RentalUseCase(RentalUseCaseInterface):
 
     def get_my_list(
         self, pagination: PaginationQuery, params: RentalListParams, user_id: int
-    ) -> list[domain_model.Rental]:
+    ) -> list[Rental]:
         try:
             return self.rental_store.list_by_user_id(
                 user_id, bool(params.closed), pagination

@@ -1,8 +1,6 @@
 from enum import Enum
 from typing import Optional
 
-import model
-
 
 class ItemStatus(str, Enum):
     public = "public"
@@ -65,23 +63,5 @@ class Item:
     def set_rented_status(self):
         self.__status = ItemStatus.rented
 
-    def __judge_status(self, item: model.Item):
-        if item.available is False:
-            self.__status = ItemStatus.private
-        elif len(list(filter(lambda r: r.returned_date is None, item.rentals))) > 0:
-            self.__status = ItemStatus.rented
-        else:
-            self.__status = ItemStatus.public
-
-    @classmethod
-    def to_domain_model(cls, item: model.Item):
-        model = cls(
-            name=item.name,
-            owner_id=item.owner_id,
-            image_url=item.image_url,
-            description=item.description,
-            author=item.author,
-        )
-        model.__id = item.id
-        model.__judge_status(item)
-        return model
+    def set_id(self, id: int):
+        self.__id = id

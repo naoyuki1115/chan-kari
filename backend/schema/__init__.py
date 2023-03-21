@@ -15,7 +15,6 @@ from schema.rental import (
 
 __all__ = [
     "PaginationQuery",
-    "ItemStatus",
     "ItemListParams",
     "ItemResponse",
     "ItemCreateRequest",

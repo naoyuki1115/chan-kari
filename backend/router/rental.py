@@ -1,7 +1,9 @@
-import domain_model
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
-from fastapi import APIRouter, Depends, HTTPException, status
+from domain import Rental, RentalStatus
 from repository import ItemStoreInterface, RentalStoreInterface
 from schema import (
     PaginationQuery,
@@ -11,7 +13,6 @@ from schema import (
     RentResponse,
     ReturnParams,
 )
-from sqlalchemy.orm import Session
 from store import ItemStore, RentalStore
 from usecase import RentalUseCase, RentalUseCaseInterface
 from util.error_msg import (
@@ -48,17 +49,15 @@ def list_rental(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        rentals: list[domain_model.Rental] = rental_usecase.get_my_list(
-            pagination, params, user_id
-        )
+        rentals: list[Rental] = rental_usecase.get_my_list(pagination, params, user_id)
         rental_res_list: list[RentalResponse] = []
         for rental in rentals:
-            if rental.get_status() == domain_model.RentalStatus.returned:
+            if rental.get_status() == RentalStatus.returned:
                 closed = True
             else:
                 closed = False
             rental_res_list.append(
-                RentalResponse(
+                RentalResponse.new(
                     rental.get_id(),
                     closed,
                     rental.get_rented_date(),
@@ -95,8 +94,8 @@ def rent_item(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        rental: domain_model.Rental = rental_usecase.rent_item(req, user_id)
-        return RentResponse(rental.get_id())
+        rental: Rental = rental_usecase.rent_item(req, user_id)
+        return RentResponse.new(rental.get_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

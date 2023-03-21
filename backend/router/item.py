@@ -1,10 +1,11 @@
-import domain_model
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
-from fastapi import APIRouter, Depends, HTTPException, status
+from domain import Item
 from repository import ItemStoreInterface, RentalStoreInterface
 from schema import ItemListParams, ItemResponse, PaginationQuery
-from sqlalchemy.orm import Session
 from store import ItemStore, RentalStore
 from usecase import ItemUseCase, ItemUseCaseInterface
 from util.logging import get_logger
@@ -33,11 +34,11 @@ def list_item(
             detail="Only either `before` or `after` can be specified",
         )
     try:
-        items: list[domain_model.Item] = item_usecase.get_list(pagination, params)
+        items: list[Item] = item_usecase.get_list(pagination, params)
         item_res_list: list[ItemResponse] = []
         for item in items:
             item_res_list.append(
-                ItemResponse(
+                ItemResponse.new(
                     item.get_id(),
                     item.get_name(),
                     item.get_status(),
