@@ -9,6 +9,15 @@ from domain.item import ItemStatus
 class ItemListParams(BaseModel):
     available: Optional[str] = Field(Query(default=None))
 
+    def validate(self):
+        if (
+            self.available == "false"
+            or self.available == "False"
+            or self.available == "f"
+            or self.available == "F"
+        ):
+            self.available = None
+
 
 class ItemResponse(BaseModel):
     id: int

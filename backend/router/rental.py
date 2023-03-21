@@ -20,6 +20,7 @@ from util.error_msg import (
     OperationIsForbiddenError,
     ResourceAlreadyExistsError,
     ResourceUnavailableError,
+    PaginationError,
 )
 from util.logging import get_logger
 
@@ -41,12 +42,10 @@ def list_rental(
     pagination: PaginationQuery = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
 ) -> list[RentalResponse]:
-    if pagination.after is not None and pagination.before is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only either `before` or `after` can be specified",
-        )
     try:
+        pagination.validate()
+        params.validate()
+
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
         rentals: list[Rental] = rental_usecase.get_my_list(pagination, params, user_id)
@@ -68,6 +67,9 @@ def list_rental(
                 )
             )
         return rental_res_list
+    except PaginationError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

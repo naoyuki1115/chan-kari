@@ -31,3 +31,10 @@ class ResourceAlreadyExistsError(Exception):
 
     def __str__(self):
         return ResourceAlreadyExistsError.message
+
+
+class PaginationError(Exception):
+    message = "Only either `before` or `after` can be specified"
+
+    def __str__(self):
+        return PaginationError.message

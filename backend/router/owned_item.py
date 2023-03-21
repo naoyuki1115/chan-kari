@@ -8,7 +8,7 @@ from repository import ItemStoreInterface, RentalStoreInterface
 from schema import ItemCreateRequest, ItemCreateResponse, ItemResponse, PaginationQuery
 from store import ItemStore, RentalStore
 from usecase import ItemUseCase, ItemUseCaseInterface
-from util.error_msg import NotFoundError
+from util.error_msg import NotFoundError, PaginationError
 from util.logging import get_logger
 
 router = APIRouter()
@@ -48,12 +48,9 @@ def list_owned_items(
     pagination: PaginationQuery = Depends(),
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
 ) -> list[ItemResponse]:
-    if pagination.after is not None and pagination.before is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only either `before` or `after` can be specified",
-        )
     try:
+        pagination.validate()
+
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
         items: list[Item] = item_usecase.get_my_list(pagination, user_id)
@@ -68,6 +65,9 @@ def list_owned_items(
                 )
             )
         return item_res_list
+    except PaginationError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

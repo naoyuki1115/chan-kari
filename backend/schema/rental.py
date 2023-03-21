@@ -26,6 +26,15 @@ class ReturnParams(BaseModel):
 class RentalListParams(BaseModel):
     closed: Optional[str] = Field(Query(default=None))
 
+    def validate(self):
+        if (
+            self.closed == "false"
+            or self.closed == "False"
+            or self.closed == "f"
+            or self.closed == "F"
+        ):
+            self.available = None
+
 
 class RentalResponse(BaseModel):
     id: int
