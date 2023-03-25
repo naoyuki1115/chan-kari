@@ -1,6 +1,6 @@
 from database.database import Base
-from model.item import Item
-from model.rental import Rental
-from model.user import User
+from model.item import ItemDTO
+from model.rental import RentalDTO
+from model.user import UserDTO
 
-__all__ = ["User", "Item", "Rental", "Base"]
+__all__ = ["UserDTO", "ItemDTO", "RentalDTO", "Base"]

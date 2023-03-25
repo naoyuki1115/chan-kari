@@ -1,18 +1,9 @@
 import abc
 
-import model
 from database.transaction import TransactionInterface
-from psycopg2.errors import ForeignKeyViolation
-from schema import (
-    ItemCreateRequest,
-    ItemCreateResponse,
-    ItemListParams,
-    ItemResponse,
-    ItemStatus,
-    PaginationQuery,
-)
-from store import ItemStoreInterface, RentalStoreInterface
-from util.error_msg import NotFoundError
+from domain import Item
+from repository import ItemStoreInterface, RentalStoreInterface
+from schema import ItemCreateRequest, PaginationQuery
 from util.logging import get_logger
 
 logger = get_logger()
@@ -20,19 +11,15 @@ logger = get_logger()
 
 class ItemUseCaseInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def get_list(
-        self, pagination: PaginationQuery, params: ItemListParams
-    ) -> list[ItemResponse]:
+    def get_list(self, pagination: PaginationQuery, available: bool) -> list[Item]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_my_list(
-        self, pagination: PaginationQuery, user_id: int
-    ) -> list[ItemResponse]:
+    def get_my_list(self, pagination: PaginationQuery, user_id: int) -> list[Item]:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
+    def create_item(self, req: ItemCreateRequest, user_id: int) -> Item:
         raise NotImplementedError
 
 
@@ -47,81 +34,32 @@ class ItemUseCase(ItemUseCaseInterface):
         self.item_store: ItemStoreInterface = item
         self.rental_store: RentalStoreInterface = rental
 
-    def get_list(
-        self, pagination: PaginationQuery, params: ItemListParams
-    ) -> list[ItemResponse]:
+    def get_list(self, pagination: PaginationQuery, available: bool) -> list[Item]:
         try:
-            items: list[model.Item] = self.item_store.list_available(pagination)
-            valid_rentals: list[model.Rental] = self.rental_store.list_valid()
-
-            item_res_list: list[ItemResponse] = []
-            for item in items:
-                if not item.available:
-                    continue
-                elif (
-                    len(list(filter(lambda r: r.item_id == item.id, valid_rentals)))
-                    != 0
-                ):
-                    status: ItemStatus = ItemStatus.rented
-                else:
-                    status: ItemStatus = ItemStatus.available
-                item_res_list.append(
-                    ItemResponse.new(item.id, item.name, status, item.image_url)
-                )
-            if bool(params.available):
-                return list(
-                    filter(lambda i: i.status == ItemStatus.available, item_res_list)
-                )
-            return item_res_list
+            return self.item_store.list_public(pagination, available)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
 
-    def get_my_list(
-        self, pagination: PaginationQuery, user_id: int
-    ) -> list[ItemResponse]:
+    def get_my_list(self, pagination: PaginationQuery, user_id: int) -> list[Item]:
         try:
-            items: list[model.Item] = self.item_store.list_by_user_id(
-                pagination, user_id
-            )
-            valid_rentals: list[model.Rental] = self.rental_store.list_valid()
-
-            item_res_list: list[ItemResponse] = []
-            for item in items:
-                if not item.available:
-                    status: ItemStatus = ItemStatus.unavailable
-                elif (
-                    len(list(filter(lambda r: r.item_id == item.id, valid_rentals)))
-                    != 0
-                ):
-                    status: ItemStatus = ItemStatus.rented
-                else:
-                    status: ItemStatus = ItemStatus.available
-                item_res_list.append(
-                    ItemResponse.new(item.id, item.name, status, item.image_url)
-                )
-            return item_res_list
+            return self.item_store.list_by_user_id(pagination, user_id)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
 
-    def create_item(self, req: ItemCreateRequest, user_id: int) -> ItemCreateResponse:
+    def create_item(self, req: ItemCreateRequest, user_id: int) -> Item:
         try:
-            item = model.Item(
-                name=req.name,
-                owner_id=user_id,
-                available=not req.draft,
-                image_url=req.image_url,
-                description=req.description,
-                author=req.author,
+            item: Item = Item(
+                req.name, user_id, req.image_url, req.description, req.author
             )
+            if req.draft:
+                item.set_private_status()
+            else:
+                item.set_public_status()
             self.item_store.create(item)
             self.tx.commit()
-            return ItemCreateResponse.new(item.id)
-        except ForeignKeyViolation as err:
-            logger.error(f"({__name__}): {err}")
-            self.tx.rollback()
-            raise NotFoundError
+            return item
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             self.tx.rollback()

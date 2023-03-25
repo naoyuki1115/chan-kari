@@ -1,11 +1,14 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
-from fastapi import APIRouter, Depends, HTTPException, status
+from domain import Item
+from repository import ItemStoreInterface, RentalStoreInterface
 from schema import ItemCreateRequest, ItemCreateResponse, ItemResponse, PaginationQuery
-from sqlalchemy.orm import Session
-from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
+from store import ItemStore, RentalStore
 from usecase import ItemUseCase, ItemUseCaseInterface
-from util.error_msg import NotFoundError
+from util.error_msg import NotFoundError, PaginationError
 from util.logging import get_logger
 
 router = APIRouter()
@@ -28,7 +31,8 @@ def create_item(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 1
-        item = item_usecase.create_item(req, user_id)
+        item: Item = item_usecase.create_item(req, user_id)
+        return ItemCreateResponse.new(item.get_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
@@ -37,7 +41,6 @@ def create_item(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return item
 
 
 @router.get("", response_model=list[ItemResponse])
@@ -45,15 +48,26 @@ def list_owned_items(
     pagination: PaginationQuery = Depends(),
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
 ) -> list[ItemResponse]:
-    if pagination.after is not None and pagination.before is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only either `before` or `after` can be specified",
-        )
     try:
+        pagination.validate()
+
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        return item_usecase.get_my_list(pagination, user_id)
+        items: list[Item] = item_usecase.get_my_list(pagination, user_id)
+        item_res_list: list[ItemResponse] = []
+        for item in items:
+            item_res_list.append(
+                ItemResponse.new(
+                    item.get_id(),
+                    item.get_name(),
+                    item.get_status(),
+                    item.get_image_url(),
+                )
+            )
+        return item_res_list
+    except PaginationError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

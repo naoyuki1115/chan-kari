@@ -1,63 +1,34 @@
-import abc
 from typing import Optional
 
-import model
-from schema import PaginationQuery
+from psycopg2.errors import ForeignKeyViolation, UniqueViolation
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
+
+from domain import Rental
+from model import RentalDTO
+from repository import RentalStoreInterface
+from schema import PaginationQuery
 from store.util import pagination_query
+from util.error_msg import NotFoundError, ResourceAlreadyExistsError
 from util.logging import get_logger
 
 logger = get_logger()
-
-
-class RentalStoreInterface(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def list_valid(self) -> list[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def list_by_user_id(
-        self,
-        user_id: int,
-        closed: bool,
-        pagination: PaginationQuery,
-    ) -> list[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def list(self) -> list[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def detail(self, id: int) -> Optional[model.Rental]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def create(self, rental: model.Rental) -> None:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def update(self, rental: model.Rental) -> None:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def delete(self) -> None:
-        raise NotImplementedError()
 
 
 class RentalStore(RentalStoreInterface):
     def __init__(self, session: Session) -> None:
         self.db = session
 
-    def list_valid(self) -> list[model.Rental]:
+    def list_valid(self) -> list[Rental]:
         try:
-            return (
-                self.db.query(model.Rental)
-                .filter(model.Rental.returned_date == None)  # NOQA
-                .order_by(model.Rental.id)
+            rentals: list[RentalDTO] = (
+                self.db.query(RentalDTO)
+                .filter(RentalDTO.returned_date == None)  # NOQA
+                .order_by(RentalDTO.id)
                 .all()
             )
+            return self.__convert_to_domain_model_list(rentals)
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
@@ -67,52 +38,89 @@ class RentalStore(RentalStoreInterface):
         user_id: int,
         closed: bool,
         pagination: PaginationQuery,
-    ) -> list[model.Rental]:
+    ) -> list[Rental]:
         try:
-            q = self.db.query(model.Rental).filter(model.Rental.user_id == user_id)
-            if closed is False:
-                q = q.filter(model.Rental.returned_date == None)  # NOQA
-            return pagination_query(model.Rental, q, pagination, model.Rental.id)
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def list(self) -> list[model.Rental]:
-        raise NotImplementedError()
-
-    def detail(self, id: int) -> Optional[model.Rental]:
-        try:
-            return self.db.query(model.Rental).filter(model.Rental.id == id).one()
-        except NoResultFound as err:
-            logger.error(f"({__name__}): {err}")
-            return None
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def create(self, rental: model.Rental) -> None:
-        try:
-            self.db.add(rental)
-        except Exception as err:
-            logger.error(f"({__name__}): {err}")
-            raise
-
-    def update(self, rental: model.Rental) -> None:
-        try:
-            _rental: model.Rental = (
-                self.db.query(model.Rental).filter(model.Rental.id == rental.id).one()
+            query = self.db.query(RentalDTO).filter(RentalDTO.user_id == user_id)
+            if closed is True:
+                query = query.filter(RentalDTO.returned_date != None)  # NOQA
+            else:
+                query = query.filter(RentalDTO.returned_date == None)  # NOQA
+            rentals: list[RentalDTO] = pagination_query(
+                RentalDTO, query, pagination, RentalDTO.id
             )
-            _rental.user_id = rental.user_id
-            _rental.item_id = rental.item_id
-            _rental.rented_date = rental.rented_date
-            _rental.returned_date = rental.returned_date
-            _rental.return_plan_date = rental.return_plan_date
+            return self.__convert_to_domain_model_list(rentals)
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def detail(self, id: int) -> Optional[Rental]:
+        try:
+            rental: RentalDTO = (
+                self.db.query(RentalDTO).filter(RentalDTO.id == id).one()
+            )
+            return rental.to_domain_model()
+        except NoResultFound as err:
+            logger.info(f"({__name__}): {err}")
+            return None
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def create(self, domain_rental: Rental) -> None:
+        try:
+            rental = RentalDTO.from_domain_model(domain_rental)
+            self.db.add(rental)
+            # Note: 一時的にDBへ反映し、IDを取得
+            self.db.flush()
+            domain_rental.set_id(rental.id)
+        except IntegrityError as err:
+            logger.error(f"({__name__}): {err}")
+            if isinstance(err.orig, UniqueViolation):
+                raise ResourceAlreadyExistsError
+            elif isinstance(err.orig, ForeignKeyViolation):
+                raise NotFoundError
+            else:
+                raise err
+        except Exception as err:
+            logger.error(f"({__name__}): {err}")
+            raise
+
+    def update(self, domain_rental: Rental) -> None:
+        try:
+            rental: RentalDTO = (
+                self.db.query(RentalDTO)
+                .filter(RentalDTO.id == domain_rental.get_id())
+                .one()
+            )
+            rental.user_id = domain_rental.get_user_id()
+            rental.item_id = domain_rental.get_item().get_id()
+            rental.rented_date = domain_rental.get_rented_date()
+            rental.return_plan_date = domain_rental.get_return_plan_date()
+            rental.returned_date = domain_rental.get_returned_date()
+            self.db.flush()
         except NoResultFound as err:
             logger.error(f"({__name__}): {err}")
             return None
+        except IntegrityError as err:
+            logger.error(f"({__name__}): {err}")
+            if isinstance(err.orig, UniqueViolation):
+                raise ResourceAlreadyExistsError
+            elif isinstance(err.orig, ForeignKeyViolation):
+                raise NotFoundError
+            else:
+                raise err
         except Exception as err:
             logger.error(f"({__name__}): {err}")
             raise
 
     def delete(self) -> None:
         raise NotImplementedError()
+
+    def __convert_to_domain_model_list(
+        self,
+        rentals: list[RentalDTO],
+    ) -> list[Rental]:
+        domain_rentals: list[Rental] = []
+        for rental in rentals:
+            domain_rentals.append(rental.to_domain_model())
+        return domain_rentals
