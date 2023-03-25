@@ -15,7 +15,7 @@ class RentResponse(BaseModel):
     id: int
 
     @classmethod
-    def new(cls, id):
+    def new(cls, id: int) -> "RentResponse":
         return cls(id=id)
 
 
@@ -25,6 +25,15 @@ class ReturnParams(BaseModel):
 
 class RentalListParams(BaseModel):
     closed: Optional[str] = Field(Query(default=None))
+
+    def validate(self):
+        if (
+            self.closed == "false"
+            or self.closed == "False"
+            or self.closed == "f"
+            or self.closed == "F"
+        ):
+            self.available = None
 
 
 class RentalResponse(BaseModel):
@@ -38,8 +47,15 @@ class RentalResponse(BaseModel):
 
     @classmethod
     def new(
-        cls, id, closed, rental_date, return_plan_date, return_date, item_id, item_name
-    ):
+        cls,
+        id: int,
+        closed: bool,
+        rental_date: date,
+        return_plan_date: date,
+        return_date: Optional[date],
+        item_id: int,
+        item_name: str,
+    ) -> "RentalResponse":
         return cls(
             id=id,
             closed=closed,

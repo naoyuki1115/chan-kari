@@ -1,10 +1,12 @@
 import os
-from database.database import create_table
+
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import PlainTextResponse
-from router import route
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
+
+from database.database import create_table
+from router import route
 
 create_table()
 

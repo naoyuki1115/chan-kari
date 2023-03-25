@@ -1,6 +1,10 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
-from fastapi import APIRouter, Depends, HTTPException, status
+from domain import Rental, RentalStatus
+from repository import ItemStoreInterface, RentalStoreInterface
 from schema import (
     PaginationQuery,
     RentalListParams,
@@ -9,12 +13,12 @@ from schema import (
     RentResponse,
     ReturnParams,
 )
-from sqlalchemy.orm import Session
-from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
+from store import ItemStore, RentalStore
 from usecase import RentalUseCase, RentalUseCaseInterface
 from util.error_msg import (
     NotFoundError,
     OperationIsForbiddenError,
+    PaginationError,
     ResourceAlreadyExistsError,
     ResourceUnavailableError,
 )
@@ -38,15 +42,36 @@ def list_rental(
     pagination: PaginationQuery = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
 ) -> list[RentalResponse]:
-    if pagination.after is not None and pagination.before is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only either `before` or `after` can be specified",
-        )
     try:
+        pagination.validate()
+        params.validate()
+
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        return rental_usecase.get_my_list(pagination, params, user_id)
+        rentals: list[Rental] = rental_usecase.get_my_list(
+            pagination, bool(params.closed), user_id
+        )
+        rental_res_list: list[RentalResponse] = []
+        for rental in rentals:
+            if rental.get_status() == RentalStatus.returned:
+                closed = True
+            else:
+                closed = False
+            rental_res_list.append(
+                RentalResponse.new(
+                    rental.get_id(),
+                    closed,
+                    rental.get_rented_date(),
+                    rental.get_return_plan_date(),
+                    rental.get_returned_date(),
+                    rental.get_item().get_id(),
+                    rental.get_item().get_name(),
+                )
+            )
+        return rental_res_list
+    except PaginationError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
@@ -73,7 +98,8 @@ def rent_item(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 2
-        return rental_usecase.rent_item(req, user_id)
+        rental: Rental = rental_usecase.rent_item(req, user_id)
+        return RentResponse.new(rental.get_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
@@ -109,7 +135,7 @@ def return_rental(
     try:
         # TODO: headerのトークンからユーザーID取得
         user_id = 3
-        rental_usecase.return_item(params, user_id)
+        rental_usecase.return_item(params.rental_id, user_id)
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

@@ -1,10 +1,14 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
-from fastapi import APIRouter, Depends, HTTPException, status
+from domain import Item
+from repository import ItemStoreInterface, RentalStoreInterface
 from schema import ItemListParams, ItemResponse, PaginationQuery
-from sqlalchemy.orm import Session
-from store import ItemStore, ItemStoreInterface, RentalStore, RentalStoreInterface
+from store import ItemStore, RentalStore
 from usecase import ItemUseCase, ItemUseCaseInterface
+from util.error_msg import PaginationError
 from util.logging import get_logger
 
 router = APIRouter()
@@ -25,19 +29,30 @@ def list_item(
     pagination: PaginationQuery = Depends(),
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
 ) -> list[ItemResponse]:
-    if pagination.after is not None and pagination.before is not None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only either `before` or `after` can be specified",
-        )
     try:
-        items = item_usecase.get_list(pagination, params)
+        pagination.validate()
+        params.validate()
+
+        items: list[Item] = item_usecase.get_list(pagination, bool(params.available))
+        item_res_list: list[ItemResponse] = []
+        for item in items:
+            item_res_list.append(
+                ItemResponse.new(
+                    item.get_id(),
+                    item.get_name(),
+                    item.get_status(),
+                    item.get_image_url(),
+                )
+            )
+        return item_res_list
+    except PaginationError as err:
+        logger.error(f"({__name__}): {err}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=err.message)
     except Exception as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-    return items
 
 
 @router.get("/{item_id}")

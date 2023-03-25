@@ -3,7 +3,6 @@ from schema.item import (
     ItemCreateResponse,
     ItemListParams,
     ItemResponse,
-    ItemStatus,
 )
 from schema.pagination import PaginationQuery
 from schema.rental import (
@@ -16,7 +15,6 @@ from schema.rental import (
 
 __all__ = [
     "PaginationQuery",
-    "ItemStatus",
     "ItemListParams",
     "ItemResponse",
     "ItemCreateRequest",
