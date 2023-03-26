@@ -12,6 +12,7 @@ from schema.rental import (
     RentResponse,
     ReturnParams,
 )
+from schema.user import UserRegisterRequest
 
 __all__ = [
     "PaginationQuery",
@@ -24,4 +25,5 @@ __all__ = [
     "ReturnParams",
     "RentalListParams",
     "RentalResponse",
+    "UserRegisterRequest",
 ]

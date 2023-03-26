@@ -40,8 +40,15 @@ class PaginationError(Exception):
         return PaginationError.message
 
 
-class UnauthorizedUserError(Exception):
-    message = "Unauthorized user"
+class UnregisteredUserError(Exception):
+    message = "Unregistered user"
 
     def __str__(self):
-        return PaginationError.message
+        return UnregisteredUserError.message
+
+
+class InvalidTokenError(Exception):
+    message = "Invalid token"
+
+    def __str__(self):
+        return InvalidTokenError.message
