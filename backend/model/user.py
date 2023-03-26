@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
+from domain import User
 from model import Base
 from model.timestamp import Timestamp
-from domain import User
 
 
 class UserDTO(Base, Timestamp):
@@ -16,6 +16,15 @@ class UserDTO(Base, Timestamp):
 
     items = relationship("ItemDTO", back_populates="owner")
     rentals = relationship("RentalDTO", back_populates="user")
+
+    @classmethod
+    def from_domain_model(cls, user: User):
+        return cls(
+            uid=user.get_uid(),
+            name=user.get_name(),
+            email=user.get_email(),
+            image_url=user.get_image_url(),
+        )
 
     def to_domain_model(self) -> User:
         user = User(
