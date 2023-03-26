@@ -1,7 +1,7 @@
 import abc
 from typing import Optional
 
-from domain.rental import Rental
+from domain import Rental
 from schema import PaginationQuery
 
 
