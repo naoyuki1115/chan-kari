@@ -21,3 +21,8 @@ class User:
         self.__name = name
         self.__email: str = email
         self.__image_url: Optional[str] = image_url
+
+    def get_user_id(self) -> int:
+        if self.__id is None:
+            raise
+        return self.__id
