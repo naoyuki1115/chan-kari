@@ -1,4 +1,26 @@
 paths:
+  signup:
+    post:
+      security:
+        - token: []
+      tags: ["profile"]
+      summary: Sign-up user
+      description: Sign-up user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nickname
+              properties:
+                nickname:
+                  $ref: "../parameter/user.yaml#/components/parameters/nickname"
+      responses:
+        "204":
+          description: Success
+
   profile:
     get:
       security:
@@ -14,14 +36,13 @@ paths:
               schema:
                 type: object
                 required:
-                  - name
-                  - nickName
+                  - nickname
                   - email
                 properties:
                   name:
                     $ref: "../parameter/user.yaml#/components/parameters/name"
-                  nickName:
-                    $ref: "../parameter/user.yaml#/components/parameters/nickName"
+                  nickname:
+                    $ref: "../parameter/user.yaml#/components/parameters/nickname"
                   email:
                     $ref: "../parameter/user.yaml#/components/parameters/email"
                   imageUrl:
@@ -39,10 +60,10 @@ paths:
             schema:
               type: object
               required:
-                - nickName
+                - nickname
               properties:
-                nickName:
-                  $ref: "../parameter/user.yaml#/components/parameters/nickName"
+                nickname:
+                  $ref: "../parameter/user.yaml#/components/parameters/nickname"
       responses:
         "204":
           description: Success
