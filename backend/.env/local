@@ -4,4 +4,4 @@ POSTGRES_DB=chankari
 POSTGRES_HOST=db
 POSTGRES_PORT=5432
 FRONTEND_ORIGIN="http://localhost:3000"
-GOOGLE_APPLICATION_CREDENTIALS="backend/.env/firebase_credentials.json"
+FIREBASE_CREDENTIALS_PATH="./.env/firebase_credentials.json"
