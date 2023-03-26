@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from auth.auth import authenticate_user
 
+from auth.auth import get_authenticated_user
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from domain import Rental, RentalStatus, User
@@ -25,9 +25,9 @@ from util.error_msg import (
 )
 from util.logging import get_logger
 
-router = APIRouter()
-
 logger = get_logger()
+
+router = APIRouter()
 
 
 def new_rental_usecase(db: Session = Depends(get_db)) -> RentalUseCaseInterface:
@@ -42,7 +42,7 @@ def list_rental(
     params: RentalListParams = Depends(),
     pagination: PaginationQuery = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
-    user: User = Depends(authenticate_user),
+    user: User = Depends(get_authenticated_user),
 ) -> list[RentalResponse]:
     try:
         pagination.validate()
@@ -94,7 +94,7 @@ def get_rental(item_id: int):
 def rent_item(
     req: RentRequest,
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
-    user: User = Depends(authenticate_user),
+    user: User = Depends(get_authenticated_user),
 ) -> RentResponse:
     try:
         rental: Rental = rental_usecase.rent_item(req, user.get_user_id())
@@ -130,7 +130,7 @@ def rent_item(
 def return_rental(
     params: ReturnParams = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
-    user: User = Depends(authenticate_user),
+    user: User = Depends(get_authenticated_user),
 ) -> None:
     try:
         rental_usecase.return_item(params.rental_id, user.get_user_id())

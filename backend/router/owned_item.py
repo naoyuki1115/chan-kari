@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from auth.auth import authenticate_user
+from auth.auth import get_authenticated_user
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
 from domain import Item, User
@@ -28,7 +28,7 @@ def new_item_usecase(db: Session = Depends(get_db)) -> ItemUseCaseInterface:
 def create_item(
     req: ItemCreateRequest,
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
-    user: User = Depends(authenticate_user),
+    user: User = Depends(get_authenticated_user),
 ) -> ItemCreateResponse:
     try:
         item: Item = item_usecase.create_item(req, user.get_user_id())
@@ -47,7 +47,7 @@ def create_item(
 def list_owned_items(
     pagination: PaginationQuery = Depends(),
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
-    user: User = Depends(authenticate_user),
+    user: User = Depends(get_authenticated_user),
 ) -> list[ItemResponse]:
     try:
         pagination.validate()
