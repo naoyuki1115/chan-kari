@@ -38,3 +38,10 @@ class PaginationError(Exception):
 
     def __str__(self):
         return PaginationError.message
+
+
+class UnauthorizedUserError(Exception):
+    message = "Unauthorized user"
+
+    def __str__(self):
+        return PaginationError.message
