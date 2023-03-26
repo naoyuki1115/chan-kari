@@ -33,7 +33,7 @@ def register_user(
             raise InvalidTokenError
         user_usecase.create_user(
             uid=idp_user.uid,
-            name=req.nickname,
+            name=req.name,
             email=idp_user.email,
             image_url=idp_user.photo_url,
         )

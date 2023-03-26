@@ -13,10 +13,10 @@ paths:
             schema:
               type: object
               required:
-                - nickname
+                - name
               properties:
-                nickname:
-                  $ref: "../parameter/user.yaml#/components/parameters/nickname"
+                name:
+                  $ref: "../parameter/user.yaml#/components/parameters/name"
       responses:
         "204":
           description: Success
@@ -45,8 +45,6 @@ paths:
                 properties:
                   name:
                     $ref: "../parameter/user.yaml#/components/parameters/name"
-                  nickname:
-                    $ref: "../parameter/user.yaml#/components/parameters/nickname"
                   email:
                     $ref: "../parameter/user.yaml#/components/parameters/email"
                   imageUrl:
@@ -67,10 +65,10 @@ paths:
             schema:
               type: object
               required:
-                - nickname
+                - name
               properties:
-                nickname:
-                  $ref: "../parameter/user.yaml#/components/parameters/nickname"
+                name:
+                  $ref: "../parameter/user.yaml#/components/parameters/name"
       responses:
         "204":
           description: Success

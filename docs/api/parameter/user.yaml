@@ -8,10 +8,6 @@ components:
       type: string
       description: user name
       example: "user name"
-    nickname:
-      type: string
-      description: nickname
-      example: "nickname"
     email:
       type: string
       description: email address
