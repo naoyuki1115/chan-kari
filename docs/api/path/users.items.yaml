@@ -45,6 +45,8 @@ paths:
                       $ref: "../parameter/item.yaml#/components/parameters/status"
                     imageUrl:
                       $ref: "../parameter/item.yaml#/components/parameters/imageUrl"
+        "401":
+          description: Unauthorized
     post:
       security:
         - token: []
@@ -85,6 +87,8 @@ paths:
                     $ref: "../parameter/item.yaml#/components/parameters/id"
         "409":
           description: Duplicate resource names
+        "401":
+          description: Unauthorized
   itemDetail:
     get:
       security:
@@ -128,6 +132,8 @@ paths:
                     $ref: "../parameter/item.yaml#/components/parameters/author"
         "403":
           description: It is not owned item.
+        "401":
+          description: Unauthorized
     put:
       security:
         - token: []
@@ -170,6 +176,8 @@ paths:
           description: Item ID is not found
         "409":
           description: Duplicate resource names
+        "401":
+          description: Unauthorized
     delete:
       security:
         - token: []
@@ -189,3 +197,5 @@ paths:
           description: It is not owned item.
         "404":
           description: Item ID is not found
+        "401":
+          description: Unauthorized

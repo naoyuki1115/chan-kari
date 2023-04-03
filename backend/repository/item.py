@@ -1,7 +1,7 @@
 import abc
 from typing import Optional
 
-from domain.item import Item
+from domain import Item
 from schema import PaginationQuery
 
 

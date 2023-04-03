@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from auth.auth import get_authenticated_user
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
-from domain import Item
+from domain import Item, User
 from repository import ItemStoreInterface, RentalStoreInterface
 from schema import ItemCreateRequest, ItemCreateResponse, ItemResponse, PaginationQuery
 from store import ItemStore, RentalStore
@@ -27,11 +28,10 @@ def new_item_usecase(db: Session = Depends(get_db)) -> ItemUseCaseInterface:
 def create_item(
     req: ItemCreateRequest,
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
+    user: User = Depends(get_authenticated_user),
 ) -> ItemCreateResponse:
     try:
-        # TODO: headerのトークンからユーザーID取得
-        user_id = 1
-        item: Item = item_usecase.create_item(req, user_id)
+        item: Item = item_usecase.create_item(req, user.get_user_id())
         return ItemCreateResponse.new(item.get_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
@@ -47,13 +47,12 @@ def create_item(
 def list_owned_items(
     pagination: PaginationQuery = Depends(),
     item_usecase: ItemUseCaseInterface = Depends(new_item_usecase),
+    user: User = Depends(get_authenticated_user),
 ) -> list[ItemResponse]:
     try:
         pagination.validate()
 
-        # TODO: headerのトークンからユーザーID取得
-        user_id = 2
-        items: list[Item] = item_usecase.get_my_list(pagination, user_id)
+        items: list[Item] = item_usecase.get_my_list(pagination, user.get_user_id())
         item_res_list: list[ItemResponse] = []
         for item in items:
             item_res_list.append(

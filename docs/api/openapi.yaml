@@ -21,6 +21,8 @@ components:
       in: header
       description: ID token obtained from FireBase
 paths:
+  /users/signup:
+    $ref: "path/users.profile.yaml#/paths/signup"
   /users/profile:
     $ref: "path/users.profile.yaml#/paths/profile"
   /items:

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from auth.auth import get_authenticated_user
 from database.database import get_db
 from database.transaction import Transaction, TransactionInterface
-from domain import Rental, RentalStatus
+from domain import Rental, RentalStatus, User
 from repository import ItemStoreInterface, RentalStoreInterface
 from schema import (
     PaginationQuery,
@@ -24,9 +25,9 @@ from util.error_msg import (
 )
 from util.logging import get_logger
 
-router = APIRouter()
-
 logger = get_logger()
+
+router = APIRouter()
 
 
 def new_rental_usecase(db: Session = Depends(get_db)) -> RentalUseCaseInterface:
@@ -41,15 +42,14 @@ def list_rental(
     params: RentalListParams = Depends(),
     pagination: PaginationQuery = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
+    user: User = Depends(get_authenticated_user),
 ) -> list[RentalResponse]:
     try:
         pagination.validate()
         params.validate()
 
-        # TODO: headerのトークンからユーザーID取得
-        user_id = 2
         rentals: list[Rental] = rental_usecase.get_my_list(
-            pagination, bool(params.closed), user_id
+            pagination, bool(params.closed), user.get_user_id()
         )
         rental_res_list: list[RentalResponse] = []
         for rental in rentals:
@@ -94,11 +94,10 @@ def get_rental(item_id: int):
 def rent_item(
     req: RentRequest,
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
+    user: User = Depends(get_authenticated_user),
 ) -> RentResponse:
     try:
-        # TODO: headerのトークンからユーザーID取得
-        user_id = 2
-        rental: Rental = rental_usecase.rent_item(req, user_id)
+        rental: Rental = rental_usecase.rent_item(req, user.get_user_id())
         return RentResponse.new(rental.get_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
@@ -131,11 +130,10 @@ def rent_item(
 def return_rental(
     params: ReturnParams = Depends(),
     rental_usecase: RentalUseCaseInterface = Depends(new_rental_usecase),
+    user: User = Depends(get_authenticated_user),
 ) -> None:
     try:
-        # TODO: headerのトークンからユーザーID取得
-        user_id = 3
-        rental_usecase.return_item(params.rental_id, user_id)
+        rental_usecase.return_item(params.rental_id, user.get_user_id())
     except NotFoundError as err:
         logger.error(f"({__name__}): {err}")
         raise HTTPException(

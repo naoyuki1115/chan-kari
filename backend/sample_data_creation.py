@@ -11,9 +11,14 @@ def insert_sample():
     session = SessionLocal()
 
     users: list[UserDTO] = [
-        UserDTO(name="sample_user_1", email="sample_1@example.com"),
-        UserDTO(name="sample_user_2", email="sample_2@example.com"),
-        UserDTO(name="sample_user_3", email="sample_3@example.com"),
+        UserDTO(uid="uid1", name="sample_user_1", email="sample_1@example.com"),
+        UserDTO(uid="uid2", name="sample_user_2", email="sample_2@example.com"),
+        UserDTO(
+            uid="uid3",
+            name="sample_user_3",
+            email="sample_3@example.com",
+            image_url="https://sozaikoujou.com/wordpress/wp-content/uploads/2021/01/th_gori_icon_beer.png",
+        ),
     ]
 
     items: list[ItemDTO] = [

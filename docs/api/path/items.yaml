@@ -93,5 +93,5 @@ paths:
                     $ref: "../parameter/item.yaml#/components/parameters/author"
                   ownerId:
                     $ref: "../parameter/user.yaml#/components/parameters/id"
-                  ownerNickName:
-                    $ref: "../parameter/user.yaml#/components/parameters/nickName"
+                  ownerName:
+                    $ref: "../parameter/user.yaml#/components/parameters/name"

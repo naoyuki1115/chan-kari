@@ -59,6 +59,8 @@ paths:
                       $ref: "../parameter/item.yaml#/components/parameters/id"
                     itemName:
                       $ref: "../parameter/item.yaml#/components/parameters/name"
+        "401":
+          description: Unauthorized
     post:
       security:
         - token: []
@@ -100,6 +102,8 @@ paths:
           description: Item ID is not found
         "409":
           description: Item is already rented by another user
+        "401":
+          description: Unauthorized
 
   rentalDetail:
     get:
@@ -164,6 +168,8 @@ paths:
           description: Rental ID is not your rental
         "404":
           description: Rental ID is not found
+        "401":
+          description: Unauthorized
   rentalReturn:
     put:
       security:
@@ -187,3 +193,5 @@ paths:
           description: Rental ID is not found
         "409":
           description: This Rental is already returned
+        "401":
+          description: Unauthorized

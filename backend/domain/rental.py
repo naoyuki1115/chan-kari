@@ -72,8 +72,8 @@ class Rental:
     ):
         self.__user_id = user_id
         self.__item = item
-        self.__rented_date: date = rented_date
-        self.__return_plan_date: date = return_plan_date
+        self.__rented_date = rented_date
+        self.__return_plan_date = return_plan_date
         self.set_status()
 
     @classmethod
